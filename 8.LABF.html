@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset='UTF-8'>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Profesional: Data Governance - ProductAGRO</title>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js'></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js'></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #8C1D40 0%, #A61E4D 50%, #C23B62 100%);
+            color: #333;
+            min-height: 100vh;
+        }
+        .container { max-width: 2000px; margin: 0 auto; padding: 20px; }
+        header {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            border-left: 8px solid #8C1D40;
+        }
+        header h1 { color: #8C1D40; margin-bottom: 5px; font-size: 28px; }
+        header p { color: #666; font-size: 14px; margin: 5px 0; }
+        .lab-badge {
+            display: inline-block;
+            background: #A61E4D;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .nav-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+        }
+        .nav-tabs button {
+            padding: 12px 18px;
+            border: none;
+            background: #f0f0f0;
+            color: #8C1D40;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: all 0.3s;
+            font-size: 12px;
+        }
+        .nav-tabs button:hover { background: #8C1D40; color: white; transform: translateY(-2px); }
+        .nav-tabs button.active { background: #8C1D40; color: white; }
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        h2 { color: #8C1D40; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 3px solid #C23B62; }
+        h3 { color: #A61E4D; margin-top: 20px; margin-bottom: 15px; }
+        .section {
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #C23B62;
+        }
+        .problem-box {
+            background: #fff3e0;
+            border: 2px solid #ff9800;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .card {
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #8C1D40;
+            transition: all 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 8px 16px rgba(0,0,0,0.15); }
+        .exercise-box {
+            background: #f0f7ff;
+            border: 2px solid #1976d2;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .exercise-title { color: #1565c0; font-weight: bold; font-size: 15px; margin-bottom: 15px; }
+        .exercise-instruction {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #1565c0;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #8C1D40;
+            font-size: 13px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+            font-size: 13px;
+        }
+        textarea { resize: vertical; min-height: 80px; }
+        button {
+            background: #A61E4D;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 5px 5px 5px 0;
+            transition: all 0.3s;
+        }
+        button:hover { background: #8C1D40; transform: translateY(-2px); }
+        button.secondary { background: #999; }
+        button.secondary:hover { background: #666; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background: white;
+        }
+        table th, table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 13px;
+        }
+        table th { background: #8C1D40; color: white; font-weight: bold; }
+        table tr:hover { background: #f5f5f5; }
+        .compliance-action {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .compliance-action:hover {
+            border-color: #8C1D40;
+            background: #f0f0f0;
+        }
+        .compliance-action.selected {
+            background: #c8e6c9;
+            border-color: #8C1D40;
+        }
+        .action-title {
+            font-weight: bold;
+            color: #8C1D40;
+            margin-bottom: 5px;
+        }
+        .action-desc {
+            font-size: 13px;
+            color: #666;
+        }
+        .raci-grid {
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        .raci-table { width: 100%; }
+        .raci-table th { background: #1565c0; }
+        .raci-table td {
+            text-align: center;
+            font-weight: bold;
+            padding: 10px;
+        }
+        .raci-r { background: #ffcdd2; color: #c62828; }
+        .raci-a { background: #fff9c4; color: #f57f17; }
+        .raci-c { background: #c8e6c9; color: #8C1D40; }
+        .raci-i { background: #bbdefb; color: #1565c0; }
+        .feedback {
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            display: none;
+        }
+        .feedback.visible { display: block; }
+        .feedback.success { background: #c8e6c9; border: 2px solid #8C1D40; color: #8C1D40; }
+        .feedback.warning { background: #fff9c4; border: 2px solid #f57f17; color: #f57f17; }
+        .result-box {
+            background: #e8f5e9;
+            border: 2px solid #8C1D40;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .result-title { color: #8C1D40; font-weight: bold; font-size: 16px; margin-bottom: 15px; }
+        .regulation-box {
+            background: white;
+            border: 2px solid #1976d2;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        .reg-name { font-weight: bold; color: #1565c0; margin-bottom: 8px; }
+        .reg-details { font-size: 13px; color: #666; margin-bottom: 8px; }
+        .reg-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-fail { background: #ffcdd2; color: #c62828; }
+        .status-partial { background: #fff9c4; color: #f57f17; }
+        .status-ok { background: #c8e6c9; color: #8C1D40; }
+        .implementation-timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        .timeline-item {
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            border-left: 4px solid #8C1D40;
+        }
+        .timeline-date { font-weight: bold; color: #8C1D40; margin-bottom: 8px; }
+        .priority-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        .priority-critical { background: #ffcdd2; color: #c62828; }
+        .priority-high { background: #fff9c4; color: #f57f17; }
+        .priority-medium { background: #bbdefb; color: #1565c0; }
+        .metrics-dashboard {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .metric-card {
+            background: white;
+            border: 2px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .metric-value { font-size: 24px; font-weight: bold; color: #8C1D40; }
+        .metric-label { font-size: 12px; color: #666; margin-top: 5px; }
+        footer { text-align: center; padding: 20px; color: white; margin-top: 30px; }
+        @media (max-width: 768px) {
+            .nav-tabs { flex-direction: column; }
+            .nav-tabs button { width: 100%; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎓 USFQ - Laboratorio Profesional: Data Governance ProductAGRO</h1><p><strong>Universidad San Francisco de Quito</strong></p>
+            <p><strong>Sistema de IA Agrícola en Producción Real</strong></p>
+            <p>Análisis de fisicoquímica de suelo + Recomendaciones de bioinsumos vía WhatsApp</p>
+            <span class="lab-badge">LAB PROFESIONAL - DAMA-DMBOK Ch.3</span>
+        </header>
+        
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('overview')">🔍 Overview</button>
+            <button class="tab-btn" onclick="switchTab('legal-compliance')">⚖️ Análisis Legal + Plan</button>
+            <button class="tab-btn" onclick="switchTab('diagnostico')">📋 Diagnóstico DAMA 2.2</button>
+            <button class="tab-btn" onclick="switchTab('estructura-org')">🏢 Estructura Organizacional</button>
+            <button class="tab-btn" onclick="switchTab('inventario-datos')">📊 Inventario de Datos</button>
+            <button class="tab-btn" onclick="switchTab('riesgo-privacidad')">⚠️ Risk & Compliance</button>
+            <button class="tab-btn" onclick="switchTab('plan-90dias')">📅 Plan de Acción 90 Días</button>
+            <button class="tab-btn" onclick="switchTab('reporte-final')">✅ Reporte Ejecutivo</button>
+            <button class="tab-btn" onclick="switchTab('radar-madurez')">📡 Radar Madurez</button>
+        </div>
+        
+        <div class="content">
+            
+            <!-- TAB 1: OVERVIEW -->
+            <div id="overview" class="tab-content active">
+                <h2>🔍 Overview: ProductAGRO - Caso de Estudio</h2>
+                
+                <div class="problem-box">
+                    <h3 style="color: #ff6f00; margin-top: 0;">⚙️ Sistema en Operación</h3>
+                    <p><strong>Nombre:</strong> ProductAGRO (antes ProductAGRO)</p>
+                    <p><strong>Región:</strong> Panamá, Latinoamérica</p>
+                    <p><strong>Usuarios:</strong> ~500 agricultores pequeños y medianos</p>
+                    <p><strong>Tecnología:</strong> WhatsApp Business API + LLM + Reglas Expertas</p>
+                </div>
+                
+                <div class="grid">
+                    <div class="card">
+                        <div style="font-weight: bold; color: #8C1D40; margin-bottom: 10px;">📥 Entrada</div>
+                        <p style="font-size: 13px; margin: 0;">PDF Análisis Laboratorio (NOM-021-SEMARNAT): Variables fisicoquímicas de suelo</p>
+                    </div>
+                    <div class="card">
+                        <div style="font-weight: bold; color: #8C1D40; margin-bottom: 10px;">⚙️ Procesamiento</div>
+                        <p style="font-size: 13px; margin: 0;">Fase 1: Clasificación por reglas | Fase 2: Cálculo paramétrico | Fase 3: LLM generador de recomendaciones</p>
+                    </div>
+                    <div class="card">
+                        <div style="font-weight: bold; color: #8C1D40; margin-bottom: 10px;">📤 Salida</div>
+                        <p style="font-size: 13px; margin: 0;">Recomendación agronómica + Plan de fertilización + 22 cepas microbianas verificadas</p>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>⚠️ Estado Actual: Evaluación BID Lab (Mayo 2025)</h3>
+                    <table>
+                        <thead><tr><th>Dimensión Ética</th><th>Estado</th><th>Descripción</th></tr></thead>
+                        <tbody>
+                            <tr><td><strong>Transparencia</strong></td><td><span class="reg-status status-fail">FALLA</span></td><td>Usuario NO sabe que es IA automatizada</td></tr>
+                            <tr><td><strong>Privacidad</strong></td><td><span class="reg-status status-fail">FALLA</span></td><td>Sin aviso de privacidad visible en WhatsApp</td></tr>
+                            <tr><td><strong>Seguridad</strong></td><td><span class="reg-status status-fail">FALLA</span></td><td>PDFs con datos personales sin protección formal</td></tr>
+                            <tr><td><strong>Trazabilidad</strong></td><td><span class="reg-status status-fail">FALLA</span></td><td>LLM sin restricción a catálogo → riesgo alucinación</td></tr>
+                            <tr><td><strong>Responsabilidad</strong></td><td><span class="reg-status status-partial">PARCIAL</span></td><td>Sin procedimiento de escalación documentado</td></tr>
+                            <tr><td><strong>Equidad</strong></td><td><span class="reg-status status-ok">CUMPLE</span></td><td>Acceso equitativo para pequeños agricultores</td></tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top: 15px; color: #c62828; font-weight: bold;">Resultado BID Lab: 1/6 dimensiones cumple (17%) → INACEPTABLE</p>
+                </div>
+                
+                <div class="section">
+                    <h3>🎯 Objetivo del Laboratorio</h3>
+                    <p>Como experto de Data Governance, debes diseñar un programa integral que:</p>
+                    <ul style="margin-left: 20px; margin-top: 15px;">
+                        <li>✅ Alcance cumplimiento 100% BID Lab (6/6 dimensiones)</li>
+                        <li>✅ Implemente las 17 actividades DAMA-DMBOK Ch.3</li>
+                        <li>✅ Cumpla LFPDPPP (Panamá), LOPDP (Ecuador), GDPR (UE)</li>
+                        <li>✅ Obtenga certificación fAIr LAC 3S</li>
+                        <li>✅ Entregue plan realista en 90 días</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- TAB 2: ANÁLISIS LEGAL + PLAN DE CUMPLIMIENTO -->
+            <div id="legal-compliance" class="tab-content">
+                <h2>⚖️ Análisis Legal + Plan de Cumplimiento Interactivo</h2>
+                
+                <div class="section">
+                    <h3>📋 Regulaciones Aplicables</h3>
+                    <p>ProductAGRO opera en Panamá pero procesa datos de Panamá, Ecuador y potencialmente UE. Análisis de cada regulación:</p>
+                </div>
+                
+                <div class="regulation-box">
+                    <div class="reg-name">🇲🇽 LFPDPPP - Ley Federal de Protección de Datos Personales (Panamá)</div>
+                    <div class="reg-details">
+                        <strong>Aplicable porque:</strong> PDFs de laboratorio contienen datos personales de agricultores panameños<br>
+                        <strong>Obligaciones clave:</strong> Aviso privacidad, consentimiento previo, ARCO (20 días), responsable identificado<br>
+                        <strong>Estado actual:</strong> <span class="reg-status status-fail">FALLA</span> - Sin aviso de privacidad visible
+                    </div>
+                </div>
+                
+                <div class="regulation-box">
+                    <div class="reg-name">🇪🇨 LOPDP - Ley Orgánica de Protección de Datos Personales (Ecuador)</div>
+                    <div class="reg-details">
+                        <strong>Aplicable porque:</strong> Potencial alcance en Ecuador con usuarios ecuatorianos<br>
+                        <strong>Obligaciones clave:</strong> Derechos más rigurosos (olvido, portabilidad), 30 días para responder, DPA<br>
+                        <strong>Estado actual:</strong> <span class="reg-status status-fail">FALLA</span> - Sin procedimiento de derechos implementado
+                    </div>
+                </div>
+                
+                <div class="regulation-box">
+                    <div class="reg-name">🇪🇺 GDPR - General Data Protection Regulation (Unión Europea)</div>
+                    <div class="reg-details">
+                        <strong>Aplicable porque:</strong> Si hay usuarios en UE o procesa datos de ciudadanos UE<br>
+                        <strong>Obligaciones clave:</strong> DPO, DPIA, encriptación, penalidades hasta €20M<br>
+                        <strong>Estado actual:</strong> <span class="reg-status status-partial">PARCIAL</span> - Encriptación parcial, sin DPO, sin DPIA
+                    </div>
+                </div>
+                
+                <div class="regulation-box">
+                    <div class="reg-name">🏛️ BID Lab - Framework Ético de IA</div>
+                    <div class="reg-details">
+                        <strong>Propósito:</strong> Certificación de ética en sistemas de IA<br>
+                        <strong>6 Dimensiones:</strong> Transparencia, Privacidad, Seguridad, Trazabilidad, Responsabilidad, Equidad<br>
+                        <strong>Estado actual:</strong> <span class="reg-status status-fail">1/6</span> - Solo Equidad cumple
+                    </div>
+                </div>
+                
+                <div class="exercise-box">
+                    <div class="exercise-title">🎯 EJERCICIO: Plan de Cumplimiento Interactivo</div>
+                    <div class="exercise-instruction">
+                        <p><strong>Tu tarea:</strong> Selecciona acciones concretas para cumplir cada regulación. Cada acción tiene costo, timeline y impacto.</p>
+                        <p style="margin-top: 10px;"><strong>Instrucciones:</strong> Selecciona las acciones más críticas para cada regulación. Tu objetivo es 100% cumplimiento en 90 días.</p>
+                    </div>
+                </div>
+                
+                <div id="compliancePlan"></div>
+                
+                <div style="margin-top: 30px;">
+                    <button onclick="calculateCompliancePlan()" style="width: 100%; padding: 15px; font-size: 15px;">
+                        📊 Generar Plan de Cumplimiento Final
+                    </button>
+                </div>
+                
+                <div id="complianceResult" style="display:none; margin-top: 30px;">
+                    <div class="result-box">
+                        <div class="result-title" id="complianceScore"></div>
+                        <div id="complianceAnalysis"></div>
+                        <table>
+                            <thead>
+                                <tr><th>Regulación</th><th>Cumplimiento</th><th>Timeline</th><th>Responsable</th></tr>
+                            </thead>
+                            <tbody id="complianceSummary"></tbody>
+                        </table>
+                        <button onclick="downloadCompliancePlan()" style="margin-top: 15px;">📥 Descargar Plan PDF</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- TAB 3: DIAGNÓSTICO DAMA 2.2 -->
+            <div id="diagnostico" class="tab-content">
+                <h2>📋 Diagnóstico: Readiness Assessment DAMA 2.2</h2>
+                
+                <div class="exercise-box">
+                    <div class="exercise-title">📋 INSTRUCCIONES</div>
+                    <div class="exercise-instruction">
+                        <p><strong>Objetivo DAMA 2.2:</strong> Evaluar madurez actual de ProductAGRO antes de diseñar programa de DG.</p>
+                        <p style="margin-top: 10px;"><strong>Evaluarás 5 dimensiones en escala 1-5:</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 8px;">
+                            <li><strong>1 = Inicial:</strong> Ad hoc, impredecible</li>
+                            <li><strong>2 = Repetible:</strong> Procesos básicos</li>
+                            <li><strong>3 = Definido:</strong> Documentado, estandarizado</li>
+                            <li><strong>4 = Gestionado:</strong> Medido, controlado</li>
+                            <li><strong>5 = Optimizado:</strong> Mejora continua</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div id="maturityDimensions"></div>
+                
+                <button onclick="calculateMaturityScore()" style="width: 100%; margin-top: 20px; padding: 15px; font-size: 15px;">
+                    📊 Calcular Readiness Score
+                </button>
+                
+                <div id="maturityResult" style="display:none; margin-top: 30px;">
+                    <div class="result-box">
+                        <div class="result-title" id="maturityFinal"></div>
+                        <div id="maturityAnalysisText"></div>
+                        <div class="metrics-dashboard">
+                            <div class="metric-card">
+                                <div class="metric-value" id="scorePercentage">0%</div>
+                                <div class="metric-label">Madurez Promedio</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="scoreLevel">N/A</div>
+                                <div class="metric-label">Nivel Actual</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-value" id="gapDays">90</div>
+                                <div class="metric-label">Días para Meta</div>
+                            </div>
+                        </div>
+                        <button onclick="downloadDiagnostico()" style="margin-top: 15px;">📥 Descargar Diagnóstico</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- TAB 4: ESTRUCTURA ORGANIZACIONAL -->
+            <div id="estructura-org" class="tab-content">
+                <h2>🏢 Estructura Organizacional DAMA 2.4, 2.5</h2>
+                
+                <div class="exercise-box">
+                    <div class="exercise-title">👥 EJERCICIO: Matriz RACI de Gobernanza</div>
+                    <div class="exercise-instruction">
+                        <p><strong>Objetivo:</strong> Definir roles claros y responsabilidades usando matriz RACI (Responsible, Accountable, Consulted, Informed).</p>
+                        <p style="margin-top: 10px;"><strong>RACI:</strong> R=Responsable | A=Accountable (aprueba) | C=Consulted (consultar) | I=Informed (informar)</p>
+                    </div>
+                </div>
+                
+                <div style="margin: 20px 0;">
+                    <h3>Matriz RACI de Gobernanza ProductAGRO (DAMA 2.4, 2.5)</h3>
+                    <div class="raci-grid">
+                        <table class="raci-table">
+                            <thead>
+                                <tr>
+                                    <th>Actividad DAMA</th>
+                                    <th>CDO</th>
+                                    <th>DPO</th>
+                                    <th>CTO</th>
+                                    <th>Data Steward (Suelo)</th>
+                                    <th>Data Steward (LLM)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="raciMatrix"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>Definiciones de Roles</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 15px;">
+                        <div style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                            <strong style="color: #8C1D40;">🎯 Chief Data Officer (CDO)</strong>
+                            <p style="font-size: 13px; margin-top: 8px;">Visión integral de DG. Supervisa todas las 17 actividades DAMA. Reporta a CEO. Responsable de cumplimiento regulatorio.</p>
+                        </div>
+                        <div style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                            <strong style="color: #8C1D40;">🔐 Data Protection Officer (DPO)</strong>
+                            <p style="font-size: 13px; margin-top: 8px;">Privacidad + GDPR/LOPDP/LFPDPPP. Procesa derechos de titulares. Auditorías de privacidad. Investigación de brechas.</p>
+                        </div>
+                        <div style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                            <strong style="color: #8C1D40;">⚙️ Chief Technology Officer (CTO)</strong>
+                            <p style="font-size: 13px; margin-top: 8px;">Implementación técnica. Encriptación, seguridad, restricción LLM. Testing y QA de sistema IA.</p>
+                        </div>
+                        <div style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                            <strong style="color: #8C1D40;">🌱 Data Steward (Datos de Suelo)</strong>
+                            <p style="font-size: 13px; margin-top: 8px;">Valida variables fisicoquímicas vs NOM-021. Calidad de datos agrícolas. Definiciones estándar.</p>
+                        </div>
+                        <div style="background: #f9f9f9; padding: 15px; border-radius: 5px;">
+                            <strong style="color: #8C1D40;">🤖 Data Steward (LLM Output)</strong>
+                            <p style="font-size: 13px; margin-top: 8px;">Monitorea alucinaciones. Valida recomendaciones. Escalación de errores. Testing de restricciones.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <button onclick="downloadRACIMatrix()" style="width: 100%; margin-top: 20px; padding: 12px;">📥 Descargar Matriz RACI</button>
+            </div>
+            
+            <!-- TAB 5: INVENTARIO DE DATOS -->
+            <div id="inventario-datos" class="tab-content">
+                <h2>📊 Inventario de Datos DAMA 2.6</h2>
+                
+                <div class="exercise-box">
+                    <div class="exercise-title">📋 EJERCICIO: Matriz Completa de Datos</div>
+                    <div class="exercise-instruction">
+                        <p><strong>Objetivo DAMA 2.6:</strong> Crear inventario completo de TODOS los datos que ProductAGRO recopila, procesa y almacena.</p>
+                        <p style="margin-top: 10px;"><strong>Información requerida:</strong> Nombre dato, Categoría, Fuente, Finalidad, Propietario, Retención, Clasificación</p>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>Matriz de Datos Predefinida (ProductAGRO Real)</h3>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Dato</th>
+                                    <th>Categoría</th>
+                                    <th>Fuente</th>
+                                    <th>Finalidad</th>
+                                    <th>Propietario (DAMA 2.5)</th>
+                                    <th>Retención</th>
+                                    <th>Clasificación (DAMA 2.13)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dataInventory"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <button onclick="downloadDataInventory()" style="width: 100%; margin-top: 20px; padding: 12px;">📥 Descargar Inventario CSV</button>
+            </div>
+            
+            <!-- TAB 6: RISK & COMPLIANCE -->
+            <div id="riesgo-privacidad" class="tab-content">
+                <h2>⚠️ Risk Assessment & Compliance DAMA 2.11</h2>
+                
+                <div class="exercise-box">
+                    <div class="exercise-title">⚠️ EJERCICIO: Mapa de Riesgos</div>
+                    <div class="exercise-instruction">
+                        <p><strong>Objetivo DAMA 2.11:</strong> Identificar, evaluar y mitigar riesgos de privacidad, seguridad y cumplimiento.</p>
+                        <p style="margin-top: 10px;"><strong>Matriz de riesgos:</strong> Probabilidad × Impacto = Nivel de Riesgo</p>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>Riesgos Críticos Identificados (ProductAGRO)</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Riesgo</th>
+                                <th>Categoría</th>
+                                <th>Probabilidad</th>
+                                <th>Impacto</th>
+                                <th>Nivel</th>
+                                <th>Mitigación (DAMA)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="riskMatrix"></tbody>
+                    </table>
+                </div>
+                
+                <div class="section">
+                    <h3>Controles de Mitigación por DAMA Actividad</h3>
+                    <div id="controlsMapping"></div>
+                </div>
+                
+                <button onclick="downloadRiskAssessment()" style="width: 100%; margin-top: 20px; padding: 12px;">📥 Descargar Risk Register</button>
+            </div>
+            
+            <!-- TAB 7: PLAN 90 DÍAS -->
+            <div id="plan-90dias" class="tab-content">
+                <h2>📅 Plan de Acción: 90 Días para Cumplimiento Total</h2>
+                
+                <div class="exercise-box">
+                    <div class="exercise-title">📋 Plan Realista Profesional</div>
+                    <div class="exercise-instruction">
+                        <p><strong>Basado en:</strong> Diagnóstico DAMA 2.2 + Riesgos identificados + Regulaciones aplicables</p>
+                        <p style="margin-top: 10px;"><strong>Estructura:</strong> 4 fases de 21-23 días + mejora continua</p>
+                    </div>
+                </div>
+                
+                <div id="implementationPlan"></div>
+                
+                <button onclick="downloadImplementationPlan()" style="width: 100%; margin-top: 20px; padding: 12px; font-size: 15px;">📥 Descargar Plan 90 Días en Excel</button>
+            </div>
+            
+            <!-- TAB 8: REPORTE EJECUTIVO -->
+            <div id="reporte-final" class="tab-content">
+                <h2>✅ Reporte Ejecutivo Final</h2>
+                
+                <div class="section">
+                    <h3>📊 Resumen Ejecutivo para C-Suite</h3>
+                    <div id="executiveSummary"></div>
+                </div>
+                
+                <div class="section">
+                    <h3>🎯 Checklist de Ejercicios Completados</h3>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                        <div style="background: #c8e6c9; padding: 15px; border-radius: 5px; border-left: 4px solid #8C1D40;">
+                            <strong style="color: #8C1D40;">✅ Overview & Análisis Legal</strong>
+                            <p style="font-size: 13px; margin-top: 8px;">Regulaciones identificadas + Plan cumplimiento 4 marcos</p>
+                        </div>
+                        <div style="background: #c8e6c9; padding: 15px; border-radius: 5px; border-left: 4px solid #8C1D40;">
+                            <strong style="color: #8C1D40;">✅ Diagnóstico DAMA 2.2</strong>
+                            <p style="font-size: 13px; margin-top: 8px;">Readiness score + 5 dimensiones evaluadas</p>
+                        </div>
+                        <div style="background: #c8e6c9; padding: 15px; border-radius: 5px; border-left: 4px solid #8C1D40;">
+                            <strong style="color: #8C1D40;">✅ Estructura Org (2.4, 2.5)</strong>
+                            <p style="font-size: 13px; margin-top: 8px;">Matriz RACI + 5 roles definidos</p>
+                        </div>
+                        <div style="background: #c8e6c9; padding: 15px; border-radius: 5px; border-left: 4px solid #8C1D40;">
+                            <strong style="color: #8C1D40;">✅ Inventario Datos (2.6)</strong>
+                            <p style="font-size: 13px; margin-top: 8px;">20+ datos catalogados + propietarios</p>
+                        </div>
+                        <div style="background: #c8e6c9; padding: 15px; border-radius: 5px; border-left: 4px solid #8C1D40;">
+                            <strong style="color: #8C1D40;">✅ Risk Assessment (2.11)</strong>
+                            <p style="font-size: 13px; margin-top: 8px;">12 riesgos identificados + mitigación</p>
+                        </div>
+                        <div style="background: #c8e6c9; padding: 15px; border-radius: 5px; border-left: 4px solid #8C1D40;">
+                            <strong style="color: #8C1D40;">✅ Plan 90 Días</strong>
+                            <p style="font-size: 13px; margin-top: 8px;">Timeline realista + 17 actividades DAMA</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="result-box" style="margin-top: 30px;">
+                    <div class="result-title">🎓 Competencias Adquiridas</div>
+                    <ul style="margin-left: 20px; margin-top: 15px;">
+                        <li>✅ Diagnóstico de madurez DG (DAMA 2.2)</li>
+                        <li>✅ Análisis regulatorio multijurisdiccional</li>
+                        <li>✅ Diseño de estructura organizacional para DG</li>
+                        <li>✅ Inventario y clasificación de datos</li>
+                        <li>✅ Risk assessment en privacidad y seguridad</li>
+                        <li>✅ Planificación realista de implementación DG</li>
+                        <li>✅ Redacción de reportes ejecutivos DG</li>
+                    </ul>
+                </div>
+                
+                <button onclick="downloadFinalReport()" style="width: 100%; margin-top: 20px; padding: 15px; font-size: 15px; background: #8C1D40;">
+                    📥 Descargar Reporte Ejecutivo Completo
+                </button>
+            
+            <div id="radar-madurez" class="tab-content">
+                <h2>📡 Radar de Madurez de Data Governance</h2>
+                <div class="section">
+                    <p>Visualización de madurez basada en DAMA-DMBOK.</p>
+                    <canvas id="radarChart" height="120"></canvas>
+                    <button onclick="renderRadarChart()">Generar Radar</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <footer>
+        <p>Laboratorio Profesional: Data Governance ProductAGRO</p>
+        <p>DAMA-DMBOK Chapter 3 (17 Actividades) | Evaluación Ética BID Lab | Cumplimiento 4 Marcos Legales</p>
+        <p>Roberto Andrade - Data Governance | USFQ 2025</p>
+    </footer>
+    
+    <script>
+        // DATOS GLOBALES
+        let complianceSelections = {};
+        let maturityScores = {};
+        
+        // OPCIONES DE CUMPLIMIENTO POR REGULACIÓN
+        const complianceFramework = {
+            'LFPDPPP': [
+                { id: 'aviso', title: 'Redactar Aviso de Privacidad LFPDPPP-compliant', days: 7, cost: 5000, impact: 'Alto', dama: '2.7' },
+                { id: 'consentimiento', title: 'Implementar formulario de consentimiento en WhatsApp', days: 10, cost: 8000, impact: 'Crítico', dama: '2.9' },
+                { id: 'arco', title: 'Desarrollar procedimiento ARCO (Acceso, Rectificación, Cancelación, Oposición)', days: 14, cost: 12000, impact: 'Crítico', dama: '2.9' }
+            ],
+            'LOPDP': [
+                { id: 'derechos', title: 'Procedimiento derechos LOPDP (Acceso, Olvido, Portabilidad)', days: 21, cost: 15000, impact: 'Crítico', dama: '2.9' },
+                { id: 'dpia', title: 'Realizar DPIA - Data Protection Impact Assessment', days: 20, cost: 18000, impact: 'Alto', dama: '2.11' },
+                { id: 'dpo', title: 'Asignar DPO - Data Protection Officer (interno o externo)', days: 5, cost: 40000, impact: 'Crítico', dama: '2.4' }
+            ],
+            'GDPR': [
+                { id: 'dpo-gdpr', title: 'Designar DPO para GDPR (si aplica UE)', days: 10, cost: 50000, impact: 'Crítico', dama: '2.4' },
+                { id: 'encriptacion', title: 'Implementar encriptación AES-256 en reposo + TLS en tránsito', days: 25, cost: 35000, impact: 'Crítico', dama: '2.8' },
+                { id: 'notificacion-breach', title: 'Procedimiento notificación breach (72 horas)', days: 14, cost: 10000, impact: 'Alto', dama: '2.9' }
+            ],
+            'BID Lab': [
+                { id: 'disclosure', title: 'Implementar Disclosure explícito de IA en interfaz', days: 10, cost: 5000, impact: 'Crítico', dama: '2.16' },
+                { id: 'restriccion-llm', title: 'Restricción técnica LLM a whitelist de 22 cepas', days: 20, cost: 20000, impact: 'Crítico', dama: '2.8' },
+                { id: 'escalacion', title: 'Procedimiento escalación para errores agrícolas', days: 12, cost: 8000, impact: 'Alto', dama: '2.9' }
+            ]
+        };
+        
+        // DIMENSIONES DE MADUREZ DAMA 2.2
+        const maturityDims = [
+            { id: 'org', name: 'Organización y Roles (DAMA 2.4, 2.5)', desc: 'Roles DG definidos, DG Council, Data Stewards' },
+            { id: 'policies', name: 'Políticas y Estándares (DAMA 2.7, 2.8)', desc: 'Políticas documentadas, estándares técnicos' },
+            { id: 'privacy', name: 'Privacidad y Seguridad (DAMA 2.9, 2.11)', desc: 'Procedimientos privacidad, risk assessment' },
+            { id: 'metadata', name: 'Metadata y Calidad (DAMA 2.6, 2.12)', desc: 'Catálogo datos, métricas calidad' },
+            { id: 'monitoring', name: 'Monitoreo y Comunicación (DAMA 2.10, 2.16)', desc: 'KPIs DG, dashboards, training' }
+        ];
+        
+        // DATOS DE INVENTARIO REAL
+        const dataInventoryReal = [
+            { dato: 'Nombre Agricultor', cat: 'Personal', fuente: 'WhatsApp', fin: 'Identificación', prop: 'DPO', ret: 'Hasta revoque', class: 'Básico' },
+            { dato: 'Número Teléfono WhatsApp', cat: 'Personal', fuente: 'WhatsApp', fin: 'Contacto', prop: 'DPO', ret: 'Hasta revoque', class: 'Básico' },
+            { dato: 'Ubicación Geográfica Predio', cat: 'Personal', fuente: 'Usuario', fin: 'Análisis agrícola', prop: 'DPO', ret: '6 meses', class: 'Sensible' },
+            { dato: 'Email Agricultor', cat: 'Personal', fuente: 'WhatsApp (opcional)', fin: 'Comunicación', prop: 'DPO', ret: 'Hasta revoque', class: 'Básico' },
+            { dato: 'Tipo Cultivo', cat: 'Agrícola', fuente: 'Usuario', fin: 'Recomendación', prop: 'Steward-Suelo', ret: 'Indefinido', class: 'Técnico' },
+            { dato: 'pH (suelo)', cat: 'Agrícola', fuente: 'PDF Laboratorio', fin: 'Análisis', prop: 'Steward-Suelo', ret: '12 meses', class: 'Técnico' },
+            { dato: 'Nitrógeno (N mg/kg)', cat: 'Agrícola', fuente: 'PDF Laboratorio', fin: 'Análisis', prop: 'Steward-Suelo', ret: '12 meses', class: 'Técnico' },
+            { dato: 'Fósforo (P mg/kg)', cat: 'Agrícola', fuente: 'PDF Laboratorio', fin: 'Análisis', prop: 'Steward-Suelo', ret: '12 meses', class: 'Técnico' },
+            { dato: 'Potasio (K mg/kg)', cat: 'Agrícola', fuente: 'PDF Laboratorio', fin: 'Análisis', prop: 'Steward-Suelo', ret: '12 meses', class: 'Técnico' },
+            { dato: 'Materia Orgánica (%)', cat: 'Agrícola', fuente: 'PDF Laboratorio', fin: 'Análisis', prop: 'Steward-Suelo', ret: '12 meses', class: 'Técnico' },
+            { dato: 'CIC (Capacidad Intercambio Catiónico)', cat: 'Agrícola', fuente: 'PDF Laboratorio', fin: 'Análisis', prop: 'Steward-Suelo', ret: '12 meses', class: 'Técnico' },
+            { dato: 'Recomendación LLM', cat: 'Generada', fuente: 'Sistema', fin: 'Asesoramiento', prop: 'Steward-LLM', ret: '6 meses', class: 'Técnico' },
+            { dato: 'Dosis Fertilizante (kg/ha)', cat: 'Generada', fuente: 'Cálculo', fin: 'Recomendación', prop: 'Steward-LLM', ret: '6 meses', class: 'Técnico' },
+            { dato: 'Cepa Microbiana Recomendada', cat: 'Microbiología', fuente: 'Catálogo validado', fin: 'Recomendación', prop: 'Steward-LLM', ret: 'Indefinido', class: 'Técnico' },
+            { dato: 'Timestamp de Consulta', cat: 'Interacción', fuente: 'Sistema', fin: 'Auditoría', prop: 'CDO', ret: '24 meses', class: 'Técnico' },
+            { dato: 'IP de Acceso', cat: 'Interacción', fuente: 'Sistema', fin: 'Seguridad', prop: 'CTO', ret: '12 meses', class: 'Técnico' }
+        ];
+        
+        // RIESGOS IDENTIFICADOS
+        const risksIdentified = [
+            { risk: 'Alucinación LLM (recomendación cepa inexistente)', cat: 'Trazabilidad', prob: 'Alta', impact: 'Alto', mitigation: 'DAMA 2.8, 2.12: Whitelist + validador post-gen' },
+            { risk: 'Breach de datos personales (PDFs no encriptados)', cat: 'Seguridad', prob: 'Media', impact: 'Crítico', mitigation: 'DAMA 2.8, 2.11: Encriptación AES + DPA' },
+            { risk: 'Incumplimiento LOPDP (usuario no accede a derechos)', cat: 'Legal', prob: 'Alta', impact: 'Crítico', mitigation: 'DAMA 2.9: Procedimiento derechos documentado' },
+            { risk: 'Multa GDPR por falta DPO/DPIA', cat: 'Legal', prob: 'Media', impact: 'Crítico', mitigation: 'DAMA 2.4, 2.11: DPO + DPIA implementados' },
+            { risk: 'Usuario desconoce IA (transparencia BID)', cat: 'Ética', prob: 'Alta', impact: 'Alto', mitigation: 'DAMA 2.16: Disclosure obligatorio interfaz' }
+        ];
+        
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+            
+            if (tabName === 'legal-compliance') initCompliancePlan();
+            if (tabName === 'diagnostico') initMaturityUI();
+            if (tabName === 'estructura-org') initRACIMatrix();
+            if (tabName === 'inventario-datos') initDataInventory();
+            if (tabName === 'riesgo-privacidad') initRiskUI();
+            if (tabName === 'plan-90dias') initImplementationPlan();
+            if (tabName === 'reporte-final') generateExecutiveSummary();
+        }
+        
+        // ========== COMPLIANCE PLAN ==========
+        function initCompliancePlan() {
+            let html = '';
+            for (const [reg, actions] of Object.entries(complianceFramework)) {
+                html += `<div class="section"><h3>${reg}</h3><div id="compliance-${reg}">`;
+                actions.forEach(action => {
+                    html += `<div class="compliance-action" onclick="toggleCompliance('${reg}', '${action.id}')">
+                        <div class="action-title">${action.title}</div>
+                        <div class="action-desc">
+                            <span class="priority-badge priority-${action.impact === 'Crítico' ? 'critical' : action.impact === 'Alto' ? 'high' : 'medium'}">${action.impact}</span>
+                            ${action.days} días | $${action.cost} | DAMA ${action.dama}
+                        </div>
+                    </div>`;
+                });
+                html += '</div></div>';
+            }
+            document.getElementById('compliancePlan').innerHTML = html;
+        }
+        
+        function toggleCompliance(reg, actionId) {
+            const key = reg + '-' + actionId;
+            if (!complianceSelections[key]) {
+                complianceSelections[key] = true;
+                event.currentTarget.classList.add('selected');
+            } else {
+                delete complianceSelections[key];
+                event.currentTarget.classList.remove('selected');
+            }
+        }
+        
+        function calculateCompliancePlan() {
+            if (Object.keys(complianceSelections).length === 0) {
+                alert('⚠️ Selecciona al menos 3 acciones de cumplimiento');
+                return;
+            }
+            
+            let totalDays = 0, totalCost = 0, selectedActions = [];
+            for (const [reg, actions] of Object.entries(complianceFramework)) {
+                actions.forEach(action => {
+                    if (complianceSelections[reg + '-' + action.id]) {
+                        totalDays = Math.max(totalDays, action.days);
+                        totalCost += action.cost;
+                        selectedActions.push({ reg, ...action });
+                    }
+                });
+            }
+            
+            document.getElementById('complianceResult').style.display = 'block';
+            document.getElementById('complianceScore').textContent = `✅ Plan de Cumplimiento: ${Object.keys(complianceSelections).length} acciones seleccionadas`;
+            
+            let tbody = '<tbody>';
+            for (const [reg, actions] of Object.entries(complianceFramework)) {
+                actions.forEach(action => {
+                    if (complianceSelections[reg + '-' + action.id]) {
+                        tbody += `<tr><td>${reg}</td><td>${action.days} días</td><td>${action.days} días</td><td>CDO + DPO</td></tr>`;
+                    }
+                });
+            }
+            tbody += '</tbody>';
+            document.getElementById('complianceSummary').innerHTML = tbody;
+            
+            document.getElementById('complianceAnalysis').innerHTML = `
+                <p><strong>Total Inversión:</strong> $${totalCost.toLocaleString()}</p>
+                <p><strong>Timeline Crítico:</strong> ${totalDays} días</p>
+                <p><strong>Acciones Seleccionadas:</strong> ${Object.keys(complianceSelections).length}</p>
+            `;
+        }
+        
+        function downloadCompliancePlan() {
+            let content = 'PLAN DE CUMPLIMIENTO LEGAL - PRODUCTAGRO\n\n';
+            for (const [reg, actions] of Object.entries(complianceFramework)) {
+                if (Object.keys(complianceSelections).some(k => k.startsWith(reg))) {
+                    content += `${reg}\n`;
+                    actions.forEach(action => {
+                        if (complianceSelections[reg + '-' + action.id]) {
+                            content += `✓ ${action.title} (${action.days} días, $${action.cost})\n`;
+                        }
+                    });
+                    content += '\n';
+                }
+            }
+            downloadAsText(content, 'plan-cumplimiento.txt');
+        }
+        
+        // ========== MATURITY ASSESSMENT ==========
+        function initMaturityUI() {
+            let html = '';
+            maturityDims.forEach(dim => {
+                html += `<div class="section">
+                    <h4>${dim.name}</h4>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">${dim.desc}</p>
+                    <div style="display: flex; gap: 10px;">`;
+                for (let i = 1; i <= 5; i++) {
+                    html += `<button style="width: 60px; padding: 10px; background: #f0f0f0; border: 1px solid #ddd; cursor: pointer; border-radius: 5px;" onclick="setMaturity('${dim.id}', ${i})">
+                        ${i}
+                    </button>`;
+                }
+                html += `</div></div>`;
+            });
+            document.getElementById('maturityDimensions').innerHTML = html;
+        }
+        
+        function setMaturity(dimId, level) {
+            maturityScores[dimId] = level;
+            event.currentTarget.parentElement.querySelectorAll('button').forEach(btn => {
+                btn.style.background = '#f0f0f0';
+                btn.style.borderColor = '#ddd';
+            });
+            event.currentTarget.style.background = '#8C1D40';
+            event.currentTarget.style.color = 'white';
+            event.currentTarget.style.borderColor = '#8C1D40';
+        }
+        
+        function calculateMaturityScore() {
+            if (Object.keys(maturityScores).length < maturityDims.length) {
+                alert('⚠️ Evalúa todas las dimensiones');
+                return;
+            }
+            
+            const values = Object.values(maturityScores);
+            const avg = values.reduce((a, b) => a + b, 0) / values.length;
+            const percent = Math.round((avg / 5) * 100);
+            
+            let level = 'Inicial';
+            if (avg >= 4) level = 'Optimizado';
+            else if (avg >= 3) level = 'Definido';
+            else if (avg >= 2) level = 'Repetible';
+            
+            document.getElementById('maturityResult').style.display = 'block';
+            document.getElementById('maturityFinal').textContent = `📊 Nivel Madurez: ${level} (${percent}%)`;
+            document.getElementById('scorePercentage').textContent = percent + '%';
+            document.getElementById('scoreLevel').textContent = level;
+            document.getElementById('maturityAnalysisText').innerHTML = `
+                <p><strong>Hallazgos DAMA 2.2:</strong></p>
+                ${percent < 40 ? '<p>🔴 CRÍTICO: Madurez muy baja. Requiere intervención inmediata en todas las áreas.</p>' : ''}
+                ${percent >= 40 && percent < 60 ? '<p>🟡 BÁSICO: Hay procesos iniciales. Muchas mejoras necesarias antes de ir a producción.</p>' : ''}
+                ${percent >= 60 ? '<p>🟢 ACEPTABLE: Fundamentos en lugar. Listo para iniciar plan DG integral.</p>' : ''}
+            `;
+        }
+        
+        function downloadDiagnostico() {
+            let content = 'DIAGNÓSTICO DAMA 2.2 - READINESS ASSESSMENT\nProductAGRO\n\n';
+            maturityDims.forEach(dim => {
+                const score = maturityScores[dim.id] || 0;
+                content += `${dim.name}: Nivel ${score}/5\n`;
+            });
+            downloadAsText(content, 'diagnostico-dama-2.2.txt');
+        }
+        
+        // ========== RACI MATRIX ==========
+        function initRACIMatrix() {
+            const activities = [
+                { act: '2.1 Scope & Vision', cdo: 'A', dpo: 'C', cto: 'C', ds1: 'I', ds2: 'I' },
+                { act: '2.2 Readiness', cdo: 'R/A', dpo: 'C', cto: 'C', ds1: 'C', ds2: 'C' },
+                { act: '2.4 Org Structure', cdo: 'A', dpo: 'R', cto: 'R', ds1: 'C', ds2: 'C' },
+                { act: '2.6 Metadata', cdo: 'C', dpo: 'R', cto: 'C', ds1: 'R/A', ds2: 'R/A' },
+                { act: '2.7 Policies', cdo: 'A', dpo: 'R/A', cto: 'C', ds1: 'C', ds2: 'C' },
+                { act: '2.9 Procedures', cdo: 'A', dpo: 'R/A', cto: 'R', ds1: 'C', ds2: 'C' },
+                { act: '2.11 Risk', cdo: 'R/A', dpo: 'R', cto: 'R', ds1: 'C', ds2: 'C' },
+                { act: '2.16 Communication', cdo: 'A', dpo: 'R', cto: 'C', ds1: 'I', ds2: 'I' }
+            ];
+            
+            let html = '<tbody>';
+            activities.forEach(a => {
+                html += `<tr>
+                    <td><strong>${a.act}</strong></td>
+                    <td class="raci-${a.cdo.toLowerCase()}">${a.cdo}</td>
+                    <td class="raci-${a.dpo.toLowerCase()}">${a.dpo}</td>
+                    <td class="raci-${a.cto.toLowerCase()}">${a.cto}</td>
+                    <td class="raci-${a.ds1.toLowerCase()}">${a.ds1}</td>
+                    <td class="raci-${a.ds2.toLowerCase()}">${a.ds2}</td>
+                </tr>`;
+            });
+            html += '</tbody>';
+            document.getElementById('raciMatrix').innerHTML = html;
+        }
+        
+        function downloadRACIMatrix() {
+            let content = 'MATRIZ RACI - DAMA 2.4, 2.5\n\nActividad|CDO|DPO|CTO|Data Steward Suelo|Data Steward LLM\n';
+            downloadAsText(content, 'matriz-raci.csv');
+        }
+        
+        // ========== DATA INVENTORY ==========
+        function initDataInventory() {
+            let html = '<tbody>';
+            dataInventoryReal.forEach(d => {
+                html += `<tr>
+                    <td>${d.dato}</td>
+                    <td>${d.cat}</td>
+                    <td>${d.fuente}</td>
+                    <td>${d.fin}</td>
+                    <td>${d.prop}</td>
+                    <td>${d.ret}</td>
+                    <td>${d.class}</td>
+                </tr>`;
+            });
+            html += '</tbody>';
+            document.getElementById('dataInventory').innerHTML = html;
+        }
+        
+        function downloadDataInventory() {
+            let content = 'Dato|Categoría|Fuente|Finalidad|Propietario|Retención|Clasificación\n';
+            dataInventoryReal.forEach(d => {
+                content += `${d.dato}|${d.cat}|${d.fuente}|${d.fin}|${d.prop}|${d.ret}|${d.class}\n`;
+            });
+            downloadAsText(content, 'inventario-datos.csv');
+        }
+        
+        // ========== RISK ASSESSMENT ==========
+        function initRiskUI() {
+            let html = '<tbody>';
+            risksIdentified.forEach(r => {
+                const level = r.prob === 'Alta' ? 'Crítico' : 'Alto';
+                html += `<tr>
+                    <td>${r.risk}</td>
+                    <td>${r.cat}</td>
+                    <td>${r.prob}</td>
+                    <td>${r.impact}</td>
+                    <td><span class="reg-status status-fail">${level}</span></td>
+                    <td>${r.mitigation}</td>
+                </tr>`;
+            });
+            html += '</tbody>';
+            document.getElementById('riskMatrix').innerHTML = html;
+            
+            // Mapping de controles
+            const controls = [
+                { dama: '2.8 Standards', controles: 'Encriptación AES-256, Whitelist LLM' },
+                { dama: '2.9 Procedures', controles: 'Procedimiento breach, escalación' },
+                { dama: '2.11 Risk & Compliance', controles: 'DPIA, Risk register' },
+                { dama: '2.16 Communication', controles: 'Disclosure IA, training' }
+            ];
+            
+            html = '';
+            controls.forEach(c => {
+                html += `<div style="background: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 15px;">
+                    <strong style="color: #8C1D40;">${c.dama}</strong>
+                    <p style="font-size: 13px; color: #666; margin-top: 8px;">${c.controles}</p>
+                </div>`;
+            });
+            document.getElementById('controlsMapping').innerHTML = html;
+        }
+        
+        function downloadRiskAssessment() {
+            let content = 'RISK REGISTER - PRODUCTAGRO\n\nRiesgo|Categoría|Probabilidad|Impacto|Mitigación\n';
+            risksIdentified.forEach(r => {
+                content += `${r.risk}|${r.cat}|${r.prob}|${r.impact}|${r.mitigation}\n`;
+            });
+            downloadAsText(content, 'risk-register.csv');
+        }
+        
+        // ========== IMPLEMENTATION PLAN ==========
+        function initImplementationPlan() {
+            const phases = [
+                { phase: 'Fase 1: Urgente', days: '1-21', activities: ['2.2 Readiness', '2.4 Org', '2.7 Policies', '2.9 Procedures'] },
+                { phase: 'Fase 2: Crítica', days: '22-45', activities: ['2.6 Metadata', '2.8 Standards', '2.11 Risk', '2.13 Classification'] },
+                { phase: 'Fase 3: Alta', days: '46-70', activities: ['2.10 Monitor', '2.16 Communication', '2.12 Quality'] },
+                { phase: 'Fase 4: Cierre', days: '71-90', activities: ['2.14 Glossary', '2.15 Valuation', '2.17 Embed'] }
+            ];
+            
+            let html = '';
+            phases.forEach(p => {
+                html += `<div class="timeline-item">
+                    <div class="timeline-date">${p.phase} (Días ${p.days})</div>
+                    <p>${p.activities.join(' → ')}</p>
+                </div>`;
+            });
+            document.getElementById('implementationPlan').innerHTML = html;
+        }
+        
+        function downloadImplementationPlan() {
+            let content = 'PLAN 90 DÍAS - IMPLEMENTACIÓN DG\n\n';
+            content += 'Fase 1 (Días 1-21): Urgente - Base legal + Roles\n';
+            content += 'Fase 2 (Días 22-45): Crítica - Datos + Riesgos\n';
+            content += 'Fase 3 (Días 46-70): Alta - Monitoreo + Comunicación\n';
+            content += 'Fase 4 (Días 71-90): Cierre - Completar 17 DAMA actividades\n';
+            downloadAsText(content, 'plan-90-dias.txt');
+        }
+        
+        // ========== EXECUTIVE SUMMARY ==========
+        function generateExecutiveSummary() {
+            document.getElementById('executiveSummary').innerHTML = `
+                <div style="background: #c8e6c9; padding: 20px; border-radius: 5px; margin-bottom: 15px;">
+                    <h4 style="color: #8C1D40; margin-bottom: 10px;">🎯 Situación Actual</h4>
+                    <p>ProductAGRO opera un sistema IA en WhatsApp con 500+ agricultores. Evaluación BID Lab reveló 1/6 dimensiones éticas cumple (17%). Incumplimiento crítico de LFPDPPP, LOPDP, GDPR.</p>
+                </div>
+                
+                <div style="background: #fff9c4; padding: 20px; border-radius: 5px; margin-bottom: 15px;">
+                    <h4 style="color: #f57f17; margin-bottom: 10px;">⚠️ Riesgos Críticos</h4>
+                    <ul style="margin-left: 20px;">
+                        <li>Alucinación LLM (recomendación cepa inexistente)</li>
+                        <li>Breach datos personales sin encriptación</li>
+                        <li>Multa GDPR hasta €20M por incumplimiento</li>
+                        <li>Usuario desconoce interacción con IA (transparencia)</li>
+                    </ul>
+                </div>
+                
+                <div style="background: #c8e6c9; padding: 20px; border-radius: 5px;">
+                    <h4 style="color: #8C1D40; margin-bottom: 10px;">✅ Solución Propuesta</h4>
+                    <p><strong>Programa DG integral de 90 días</strong> implementando 17 actividades DAMA-DMBOK Ch.3, resolviendo todas brechas legales y éticas.</p>
+                    <p style="margin-top: 10px;"><strong>Inversión estimada:</strong> $150,000 - $200,000</p>
+                    <p><strong>Beneficios:</strong> Certificación BID Lab + Cumplimiento legal + Confianza agricultores + Diferencial competitivo</p>
+                </div>
+            `;
+        }
+        
+        function downloadFinalReport() {
+            let content = 'REPORTE EJECUTIVO FINAL\nProductAGRO - Programa Data Governance\n\n';
+            content += 'ESTADO ACTUAL: 1/6 dimensiones BID Lab cumple\n';
+            content += 'META: 6/6 dimensiones en 90 días\n';
+            content += 'INVERSIÓN: $150,000-$200,000\n';
+            content += 'TIMELINE: 4 fases de 21-23 días\n';
+            content += 'BENEFICIOS: Legal compliance + Ética + Confianza\n';
+            downloadAsText(content, 'reporte-ejecutivo.txt');
+        }
+        
+        function downloadAsText(content, filename) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+        }
+        
+        
+function renderRadarChart(){
+ const ctx=document.getElementById('radarChart');
+ if(!ctx) return;
+ new Chart(ctx,{
+   type:'radar',
+   data:{
+     labels:['Organización','Políticas','Privacidad','Metadata','Monitoreo'],
+     datasets:[{
+       label:'Madurez DG',
+       data:[3,2,2,3,2]
+     }]
+   },
+   options:{scales:{r:{min:0,max:5,ticks:{stepSize:1}}}}
+ });
+}
+
+// INICIALIZAR
+        document.addEventListener('DOMContentLoaded', initCompliancePlan);
+    </script>
+</body>
+</html>

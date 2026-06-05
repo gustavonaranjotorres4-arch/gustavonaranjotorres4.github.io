@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DMBOK2 Capítulo 3: Data Governance — Curso Interactivo</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg2: #ffffff;
+    --bg3: #f5f5f5;
+    --border: rgba(0,0,0,0.10);
+    --border2: rgba(0,0,0,0.18);
+    --text: #111111;
+    --text2: #3f3f46;
+    --text3: #6b7280;
+    --accent: #d71920;
+    --accent2: #111111;
+    --accent3: #d71920;
+    --accent4: #b91c1c;
+    --accent5: #d71920;
+    --radius: 10px;
+    --font: 'IBM Plex Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 15px;
+    line-height: 1.65;
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: #ffffff;
+    border-bottom: 3px solid #d71920;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    height: 82px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,.08);
+  }
+  .usfq-logo {
+    height: 58px;
+    width: auto;
+    object-fit: contain;
+    display: block;
+  }
+  .header-badge {
+    background: var(--accent);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+  }
+  .header-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .header-sub { font-size: 13px; color: var(--text3); margin-left: auto; }
+  .progress-bar-wrap { width: 160px; height: 4px; background: var(--border2); border-radius: 2px; }
+  .progress-bar-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width .4s; }
+
+  /* ── LAYOUT ── */
+  .layout { display: flex; min-height: calc(100vh - 82px); }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: 240px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 0;
+    position: sticky;
+    top: 82px;
+    height: calc(100vh - 82px);
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  .sidebar-section { padding: 0 1rem .5rem; font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; color: var(--text3); }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: .6rem 1rem .6rem 1.25rem;
+    font-size: 13px;
+    color: var(--text2);
+    cursor: pointer;
+    border-left: 2px solid transparent;
+    transition: all .15s;
+    user-select: none;
+  }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { border-left-color: var(--accent); background: rgba(215,25,32,.08); color: var(--accent); }
+  .nav-item .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border2); flex-shrink: 0; transition: background .2s; }
+  .nav-item.done .dot { background: var(--accent2); }
+  .nav-item.active .dot { background: var(--accent); }
+
+  /* ── MAIN ── */
+  .main { flex: 1; padding: 2.5rem 2.5rem 4rem; max-width: 860px; }
+
+  /* ── MODULE CARD ── */
+  .module { display: none; }
+  .module.visible { display: block; animation: fadeIn .25s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .module-tag { font-size: 11px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); margin-bottom: .5rem; }
+  .module-title { font-size: 24px; font-weight: 600; color: var(--text); margin-bottom: .5rem; line-height: 1.3; }
+  .module-intro { color: var(--text2); margin-bottom: 2rem; font-size: 15px; }
+
+  /* content blocks */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .card-title {
+    font-size: 13px; font-weight: 600; text-transform: uppercase;
+    letter-spacing: .07em; color: var(--text3); margin-bottom: .75rem;
+  }
+  .key-concept {
+    background: rgba(215,25,32,.07);
+    border: 1px solid rgba(215,25,32,.20);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+  .key-concept .kc-label { font-size: 11px; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .4rem; }
+  .key-concept p { color: var(--text); font-size: 14.5px; }
+
+  .callout {
+    border-left: 3px solid var(--accent3);
+    background: rgba(251,191,36,.06);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: .9rem 1.1rem;
+    margin-bottom: 1.25rem;
+    font-size: 14px;
+    color: var(--text2);
+  }
+  .callout strong { color: var(--accent3); }
+
+  .pill-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1.25rem; }
+  .pill {
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: 20px; padding: .3rem .9rem;
+    font-size: 12.5px; color: var(--text2);
+  }
+  .pill.blue { background: rgba(215,25,32,.10); border-color: rgba(215,25,32,.25); color: #d71920; }
+  .pill.green { background: rgba(74,222,128,.1); border-color: rgba(74,222,128,.25); color: #6fde99; }
+  .pill.amber { background: rgba(251,191,36,.1); border-color: rgba(251,191,36,.25); color: #f5cc5a; }
+  .pill.purple { background: rgba(167,139,250,.1); border-color: rgba(167,139,250,.25); color: #c4adfc; }
+
+  /* steward types table */
+  .steward-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 1px; background: var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 1.25rem; }
+  .sg-cell { background: var(--bg2); padding: .65rem .9rem; font-size: 13.5px; }
+  .sg-cell.header { background: var(--bg3); font-size: 11px; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; color: var(--text3); }
+  .sg-cell.role { color: var(--accent5); font-weight: 500; }
+  .sg-cell.desc { color: var(--text2); }
+
+  /* activities accordion */
+  .activity-list { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1.5rem; }
+  .activity-item {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+  }
+  .activity-header {
+    display: flex; align-items: center; gap: .75rem;
+    padding: .75rem 1rem; cursor: pointer; user-select: none;
+    transition: background .15s;
+  }
+  .activity-header:hover { background: var(--bg3); }
+  .activity-num {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(215,25,32,.15);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 600; color: var(--accent); flex-shrink: 0;
+  }
+  .activity-name { font-size: 14px; font-weight: 500; color: var(--text); flex: 1; }
+  .activity-chevron { color: var(--text3); font-size: 12px; transition: transform .2s; }
+  .activity-item.open .activity-chevron { transform: rotate(180deg); }
+  .activity-body { display: none; padding: 0 1rem .9rem 3.35rem; font-size: 13.5px; color: var(--text2); line-height: 1.6; }
+  .activity-item.open .activity-body { display: block; }
+
+  /* ── SIMULATOR ── */
+  .sim-container { background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--radius); overflow: hidden; margin-bottom: 1.5rem; }
+  .sim-header { background: var(--bg3); padding: .75rem 1.25rem; display: flex; align-items: center; gap: .75rem; border-bottom: 1px solid var(--border); }
+  .sim-header-title { font-size: 14px; font-weight: 600; color: var(--text); }
+  .sim-tag { background: rgba(74,222,128,.15); color: #6fde99; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 12px; }
+  .sim-body { padding: 1.5rem; }
+
+  /* DG Readiness Simulator */
+  .sim-question { font-size: 15px; color: var(--text); margin-bottom: 1.25rem; font-weight: 500; }
+  .sim-options { display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1.25rem; }
+  .sim-opt {
+    background: var(--bg3); border: 1.5px solid var(--border2);
+    border-radius: 8px; padding: .7rem 1rem;
+    cursor: pointer; font-size: 13.5px; color: var(--text2);
+    transition: all .15s; user-select: none;
+  }
+  .sim-opt:hover { border-color: var(--accent); color: var(--text); background: rgba(215,25,32,.06); }
+  .sim-opt.selected { border-color: var(--accent); background: rgba(215,25,32,.12); color: var(--text); }
+  .sim-opt.correct { border-color: var(--accent2); background: rgba(74,222,128,.12); color: #6fde99; }
+  .sim-opt.wrong { border-color: var(--accent4); background: rgba(248,113,113,.1); color: var(--accent4); }
+  .sim-feedback {
+    background: var(--bg3); border-radius: 8px;
+    padding: .9rem 1rem; font-size: 13.5px;
+    margin-bottom: 1.25rem; display: none;
+  }
+  .sim-feedback.visible { display: block; }
+  .sim-feedback.ok { border-left: 3px solid var(--accent2); color: var(--text); }
+  .sim-feedback.bad { border-left: 3px solid var(--accent4); color: var(--text2); }
+  .sim-nav { display: flex; align-items: center; justify-content: space-between; }
+  .sim-progress-text { font-size: 12px; color: var(--text3); }
+
+  /* DG Operating Framework Builder Lab */
+  .lab-container { background: var(--bg2); border: 1px solid var(--border2); border-radius: var(--radius); overflow: hidden; margin-bottom: 1.5rem; }
+  .lab-header { background: var(--bg3); padding: .75rem 1.25rem; display: flex; align-items: center; gap: .75rem; border-bottom: 1px solid var(--border); }
+  .lab-tag { background: rgba(167,139,250,.15); color: #c4adfc; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: 2px 8px; border-radius: 12px; }
+  .lab-body { padding: 1.5rem; }
+
+  .drag-zone {
+    min-height: 80px; border: 1.5px dashed var(--border2);
+    border-radius: 8px; padding: .75rem; display: flex;
+    flex-wrap: wrap; gap: .5rem; align-content: flex-start;
+    transition: border-color .2s;
+  }
+  .drag-zone.over { border-color: var(--accent); background: rgba(108,138,255,.04); }
+  .drag-chip {
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: 6px; padding: .35rem .75rem;
+    font-size: 12.5px; color: var(--text2);
+    cursor: grab; user-select: none; transition: all .15s;
+  }
+  .drag-chip:hover { border-color: var(--accent); color: var(--text); }
+  .drag-chip.placed { background: rgba(215,25,32,.10); border-color: rgba(108,138,255,.3); color: #d71920; cursor: grab; }
+  .lab-check-btn {
+    background: var(--accent); color: #fff;
+    border: none; border-radius: 8px;
+    padding: .65rem 1.5rem; font-size: 14px; font-weight: 500;
+    cursor: pointer; margin-top: 1rem; transition: opacity .15s;
+  }
+  .lab-check-btn:hover { opacity: .85; }
+  .lab-result { margin-top: 1rem; font-size: 13.5px; display: none; padding: .9rem 1rem; border-radius: 8px; }
+  .lab-result.visible { display: block; }
+
+  /* Stewardship Role Matcher */
+  .role-matcher { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 1.25rem; }
+  .role-scenario {
+    background: var(--bg3); border: 1.5px solid var(--border);
+    border-radius: 8px; padding: 1rem;
+  }
+  .role-scenario p { font-size: 13px; color: var(--text2); margin-bottom: .75rem; }
+  .role-select {
+    width: 100%; background: var(--bg2); border: 1px solid var(--border2);
+    color: var(--text); border-radius: 6px; padding: .5rem .75rem;
+    font-size: 13px; font-family: var(--font); cursor: pointer;
+    appearance: none; -webkit-appearance: none;
+  }
+  .role-select:focus { outline: 1px solid var(--accent); }
+
+  /* Policy builder */
+  .policy-form { display: flex; flex-direction: column; gap: 1rem; }
+  .policy-field label { font-size: 12px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: .07em; display: block; margin-bottom: .35rem; }
+  .policy-field input, .policy-field select, .policy-field textarea {
+    width: 100%; background: var(--bg3); border: 1px solid var(--border2);
+    color: var(--text); border-radius: 8px;
+    padding: .65rem .9rem; font-size: 14px; font-family: var(--font);
+    appearance: none; -webkit-appearance: none;
+  }
+  .policy-field textarea { min-height: 80px; resize: vertical; }
+  .policy-field input:focus, .policy-field select:focus, .policy-field textarea:focus {
+    outline: 1px solid var(--accent); border-color: var(--accent);
+  }
+  .policy-preview {
+    background: var(--bg3); border: 1px solid var(--border2);
+    border-radius: 8px; padding: 1rem; font-size: 13.5px;
+    color: var(--text2); line-height: 1.7; display: none;
+    white-space: pre-wrap;
+  }
+  .policy-preview.visible { display: block; }
+  .policy-preview strong { color: var(--text); }
+
+  /* Metrics lab */
+  .metric-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .75rem; margin-bottom: 1.25rem; }
+  .metric-card {
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1rem; text-align: center;
+  }
+  .metric-val { font-size: 26px; font-weight: 600; font-family: var(--mono); }
+  .metric-label { font-size: 11.5px; color: var(--text3); margin-top: .25rem; }
+  .metric-trend { font-size: 11px; margin-top: .2rem; }
+
+  .slider-row { display: flex; align-items: center; gap: .75rem; margin-bottom: .75rem; }
+  .slider-label { width: 180px; font-size: 13px; color: var(--text2); }
+  .slider-row input[type=range] { flex: 1; accent-color: var(--accent); }
+  .slider-val { width: 32px; font-size: 12.5px; font-family: var(--mono); color: var(--accent); text-align: right; }
+
+  /* Score dashboard */
+  .score-bar { display: flex; gap: .5rem; align-items: center; margin-bottom: .6rem; }
+  .score-bar-label { width: 200px; font-size: 13px; color: var(--text2); }
+  .score-bar-track { flex: 1; height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+  .score-bar-fill { height: 100%; border-radius: 4px; transition: width .5s ease; }
+  .score-bar-val { width: 32px; font-size: 12px; font-family: var(--mono); color: var(--text2); text-align: right; }
+
+  /* nav buttons */
+  .nav-buttons { display: flex; gap: .75rem; margin-top: 2rem; }
+  .btn {
+    padding: .65rem 1.5rem; border-radius: 8px; font-size: 14px;
+    font-weight: 500; cursor: pointer; border: none; transition: all .15s;
+    font-family: var(--font);
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: #5a78ee; }
+  .btn-secondary { background: var(--bg3); color: var(--text2); border: 1px solid var(--border2); }
+  .btn-secondary:hover { color: var(--text); border-color: var(--border2); }
+
+  /* quiz final score */
+  .final-score-ring {
+    width: 120px; height: 120px; margin: 1.5rem auto;
+    position: relative; display: flex; align-items: center; justify-content: center;
+  }
+  .final-score-ring svg { position: absolute; top: 0; left: 0; transform: rotate(-90deg); }
+  .final-score-num { font-size: 28px; font-weight: 600; font-family: var(--mono); color: var(--accent); }
+  .final-score-sub { font-size: 12px; color: var(--text3); margin-top: .2rem; }
+
+  /* tooltip */
+  abbr[title] { text-decoration: underline dotted var(--text3); cursor: help; }
+
+  @media (max-width: 700px) {
+    .sidebar { display: none; }
+    .main { padding: 1.5rem 1rem 3rem; }
+    .role-matcher { grid-template-columns: 1fr; }
+    .metric-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="app-header">
+  <img class="usfq-logo" src="data:image/png;base64,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" alt="Universidad San Francisco de Quito">
+  <span class="header-badge">DMBOK2</span>
+  <span class="header-title">Capítulo 3 — Data Governance</span>
+  <div style="display:flex;align-items:center;gap:.75rem;margin-left:auto;">
+    <span style="font-size:12px;color:var(--text3);" id="progress-label">0 / 6 completados</span>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="main-progress" style="width:0%"></div></div>
+  </div>
+</header>
+
+<div class="layout">
+
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-section" style="margin-bottom:.5rem;">Módulos</div>
+  <div class="nav-item active" data-mod="0" onclick="goMod(0)">
+    <span class="dot"></span> Introducción
+  </div>
+  <div class="nav-item" data-mod="1" onclick="goMod(1)">
+    <span class="dot"></span> Conceptos Esenciales
+  </div>
+  <div class="nav-item" data-mod="2" onclick="goMod(2)">
+    <span class="dot"></span> Actividades DG
+  </div>
+  <div class="nav-item" data-mod="3" onclick="goMod(3)">
+    <span class="dot"></span> Herramientas y Métricas
+  </div>
+  <div class="sidebar-section" style="margin-top:1.25rem;margin-bottom:.5rem;">Laboratorios</div>
+  <div class="nav-item" data-mod="4" onclick="goMod(4)">
+    <span class="dot"></span> Simulador Readiness
+  </div>
+  <div class="nav-item" data-mod="5" onclick="goMod(5)">
+    <span class="dot"></span> Lab: Framework Builder
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- ════════════════════════════════════════════
+     MÓDULO 0: INTRODUCCIÓN
+════════════════════════════════════════════ -->
+<section class="module visible" id="mod-0">
+  <div class="module-tag">Módulo 1 de 6</div>
+  <h1 class="module-title">¿Qué es Data Governance?</h1>
+  <p class="module-intro">El Capítulo 3 del DMBOK2 define Data Governance (DG) como el ejercicio de autoridad, control y toma de decisiones compartidas sobre la gestión de activos de datos. Es el eje central que conecta todos los Knowledge Areas del DAMA Wheel.</p>
+
+  <div class="key-concept">
+    <div class="kc-label">Definición DMBOK2</div>
+    <p>Data Governance es el <strong>ejercicio de autoridad, control y toma de decisiones compartidas</strong> (planificación, monitoreo y aplicación) sobre la gestión de activos de datos. Incluye las personas, los procesos y las tecnologías requeridas para gestionar y proteger dichos activos.</p>
+  </div>
+
+  <div class="card">
+    <div class="card-title">¿Por qué es el eje central?</div>
+    <p style="color:var(--text2);font-size:14px;margin-bottom:.9rem;">El DAMA Wheel posiciona a Data Governance en el centro porque sus principios y decisiones afectan a todos los demás Knowledge Areas:</p>
+    <div class="pill-row">
+      <span class="pill blue">Data Architecture</span>
+      <span class="pill blue">Data Modeling & Design</span>
+      <span class="pill blue">Data Storage & Operations</span>
+      <span class="pill blue">Data Security</span>
+      <span class="pill blue">Data Integration</span>
+      <span class="pill blue">Documents & Content</span>
+      <span class="pill blue">Reference & Master Data</span>
+      <span class="pill blue">Data Warehousing & BI</span>
+      <span class="pill blue">Metadata Management</span>
+      <span class="pill blue">Data Quality</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Drivers de Negocio</div>
+    <p style="color:var(--text2);font-size:14px;margin-bottom:.75rem;">Las organizaciones adoptan DG para responder a necesidades concretas:</p>
+    <div style="display:flex;flex-direction:column;gap:.5rem;">
+      <div style="display:flex;gap:.75rem;align-items:flex-start;">
+        <span style="color:var(--accent);font-size:18px;line-height:1;">↳</span>
+        <span style="font-size:13.5px;color:var(--text2);"><strong style="color:var(--text);">Reducir riesgos:</strong> cumplimiento regulatorio, privacidad de datos, seguridad.</span>
+      </div>
+      <div style="display:flex;gap:.75rem;align-items:flex-start;">
+        <span style="color:var(--accent);font-size:18px;line-height:1;">↳</span>
+        <span style="font-size:13.5px;color:var(--text2);"><strong style="color:var(--text);">Mejorar procesos:</strong> estandarización, calidad de datos, procesos de negocio más eficientes.</span>
+      </div>
+      <div style="display:flex;gap:.75rem;align-items:flex-start;">
+        <span style="color:var(--accent);font-size:18px;line-height:1;">↳</span>
+        <span style="font-size:13.5px;color:var(--text2);"><strong style="color:var(--text);">Generar valor:</strong> mejor toma de decisiones, nuevas fuentes de ingreso, ventaja competitiva.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>💡 Contexto clave:</strong> DG no es solo tecnología ni un proyecto de TI. Es un programa de cambio organizacional que requiere patrocinio ejecutivo, colaboración cross-funcional y gestión del cambio cultural.
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-primary" onclick="goMod(1)">Siguiente: Conceptos Esenciales →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     MÓDULO 1: CONCEPTOS ESENCIALES
+════════════════════════════════════════════ -->
+<section class="module" id="mod-1">
+  <div class="module-tag">Módulo 2 de 6</div>
+  <h1 class="module-title">Conceptos Esenciales</h1>
+  <p class="module-intro">Antes de implementar Data Governance es necesario comprender sus componentes estructurales: la organización DG, el Data Stewardship, las políticas y la valoración de activos de datos.</p>
+
+  <div class="card">
+    <div class="card-title">1. Organización de Data Governance</div>
+    <p style="color:var(--text2);font-size:14px;margin-bottom:.9rem;">Una organización DG típica tiene tres niveles de responsabilidad:</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;">
+      <div style="background:rgba(215,25,32,.07);border:1px solid rgba(215,25,32,.18);border-radius:8px;padding:.9rem;text-align:center;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--accent);margin-bottom:.4rem;">Estratégico</div>
+        <div style="font-size:13px;color:var(--text2);">Data Governance Council<br>CDO / Executive Sponsors</div>
+      </div>
+      <div style="background:rgba(167,139,250,.07);border:1px solid rgba(167,139,250,.18);border-radius:8px;padding:.9rem;text-align:center;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--accent5);margin-bottom:.4rem;">Táctico</div>
+        <div style="font-size:13px;color:var(--text2);">Data Governance Steering Committee<br>Data Stewardship Council</div>
+      </div>
+      <div style="background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.18);border-radius:8px;padding:.9rem;text-align:center;">
+        <div style="font-size:11px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--accent2);margin-bottom:.4rem;">Operacional</div>
+        <div style="font-size:13px;color:var(--text2);">Data Stewards<br>Data Owners / Analysts</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">2. Tipos de Data Stewards</div>
+    <div class="steward-grid">
+      <div class="sg-cell header">Rol</div>
+      <div class="sg-cell header">Responsabilidad</div>
+      <div class="sg-cell role">Chief Data Steward</div>
+      <div class="sg-cell desc">Preside cuerpos de DG; puede actuar como CDO en estructuras virtuales.</div>
+      <div class="sg-cell role">Executive Data Steward</div>
+      <div class="sg-cell desc">Gerente senior que forma parte del Data Governance Council.</div>
+      <div class="sg-cell role">Enterprise Data Steward</div>
+      <div class="sg-cell desc">Supervisión de un dominio de datos a través de múltiples funciones de negocio.</div>
+      <div class="sg-cell role">Business Data Steward</div>
+      <div class="sg-cell desc">Experto en la materia; define y controla datos junto a stakeholders.</div>
+      <div class="sg-cell role">Technical Data Steward</div>
+      <div class="sg-cell desc">Profesional TI (DBA, DQ Analyst, BI Specialist, Metadata Admin).</div>
+      <div class="sg-cell role">Coordinating Data Steward</div>
+      <div class="sg-cell desc">Lidera equipos de stewards; clave en grandes organizaciones.</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">3. Data Policies vs. Standards vs. Procedures</div>
+    <p style="color:var(--text2);font-size:14px;margin-bottom:.75rem;">La jerarquía normativa de DG sigue esta estructura:</p>
+    <div style="display:flex;align-items:stretch;gap:.5rem;">
+      <div style="flex:1;background:rgba(251,191,36,.08);border:1px solid rgba(251,191,36,.2);border-radius:8px;padding:.9rem;">
+        <div style="font-size:11px;font-weight:600;color:var(--accent3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.35rem;">Policies — "el QUÉ"</div>
+        <div style="font-size:13px;color:var(--text2);">Directrices globales. Pocas, breves, directas. Codifican principios de gestión.</div>
+      </div>
+      <div style="flex:1;background:rgba(215,25,32,.07);border:1px solid rgba(215,25,32,.18);border-radius:8px;padding:.9rem;">
+        <div style="font-size:11px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.35rem;">Standards — "el CÓMO (mínimo)"</div>
+        <div style="font-size:13px;color:var(--text2);">Definen los requisitos mínimos de conformidad para implementar las políticas.</div>
+      </div>
+      <div style="flex:1;background:rgba(74,222,128,.07);border:1px solid rgba(74,222,128,.18);border-radius:8px;padding:.9rem;">
+        <div style="font-size:11px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.35rem;">Procedures — "el CÓMO (detalle)"</div>
+        <div style="font-size:13px;color:var(--text2);">Pasos operativos específicos para cumplir los estándares.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">4. Valoración de Activos de Datos</div>
+    <p style="color:var(--text2);font-size:14px;margin-bottom:.75rem;">El DMBOK2 propone traducir los Principios Contables Generalmente Aceptados (GAAP) a <em>Generally Accepted Information Principles</em>:</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:.5rem;">
+      <div style="background:var(--bg3);border-radius:6px;padding:.7rem .9rem;">
+        <span style="font-size:12px;font-weight:600;color:var(--accent5);">Asset Principle</span>
+        <p style="font-size:12.5px;color:var(--text3);margin-top:.2rem;">Los datos son activos gestionables como otros activos materiales.</p>
+      </div>
+      <div style="background:var(--bg3);border-radius:6px;padding:.7rem .9rem;">
+        <span style="font-size:12px;font-weight:600;color:var(--accent5);">Liability Principle</span>
+        <p style="font-size:12.5px;color:var(--text3);margin-top:.2rem;">Existe pasivo financiero por mal uso o mal manejo regulatorio de datos.</p>
+      </div>
+      <div style="background:var(--bg3);border-radius:6px;padding:.7rem .9rem;">
+        <span style="font-size:12px;font-weight:600;color:var(--accent5);">Quality Principle</span>
+        <p style="font-size:12.5px;color:var(--text3);margin-top:.2rem;">La precisión y el ciclo de vida de los datos afectan el estado financiero.</p>
+      </div>
+      <div style="background:var(--bg3);border-radius:6px;padding:.7rem .9rem;">
+        <span style="font-size:12px;font-weight:600;color:var(--accent5);">Risk Principle</span>
+        <p style="font-size:12.5px;color:var(--text3);margin-top:.2rem;">El riesgo asociado a los datos debe reconocerse formalmente.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="goMod(0)">← Anterior</button>
+    <button class="btn btn-primary" onclick="goMod(2)">Siguiente: Actividades DG →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     MÓDULO 2: ACTIVIDADES DG
+════════════════════════════════════════════ -->
+<section class="module" id="mod-2">
+  <div class="module-tag">Módulo 3 de 6</div>
+  <h1 class="module-title">Las 17 Actividades de Data Governance</h1>
+  <p class="module-intro">El DMBOK2 describe 17 actividades clave que conforman un programa de DG completo. Expande cada una para conocer sus detalles.</p>
+
+  <div class="activity-list" id="activity-list"></div>
+
+  <div class="callout" style="margin-top:.5rem;">
+    <strong>Secuencia recomendada:</strong> Comienza con el Readiness Assessment (2.2) antes de definir la estrategia. Sin un diagnóstico sólido, los programas DG suelen fallar por falta de alineación organizacional.
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="goMod(1)">← Anterior</button>
+    <button class="btn btn-primary" onclick="goMod(3)">Siguiente: Herramientas y Métricas →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     MÓDULO 3: HERRAMIENTAS Y MÉTRICAS
+════════════════════════════════════════════ -->
+<section class="module" id="mod-3">
+  <div class="module-tag">Módulo 4 de 6</div>
+  <h1 class="module-title">Herramientas, Técnicas y Métricas</h1>
+  <p class="module-intro">El capítulo describe herramientas concretas y un set de métricas para monitorear la efectividad del programa DG.</p>
+
+  <div class="card">
+    <div class="card-title">Herramientas Clave</div>
+    <div style="display:flex;flex-direction:column;gap:.6rem;">
+      <div style="display:flex;gap:.75rem;align-items:flex-start;">
+        <span class="pill blue" style="flex-shrink:0;font-size:12px;">Online Presence</span>
+        <span style="font-size:13.5px;color:var(--text2);">Portales web internos que comunican el programa DG: sus políticas, estándares, directrices y actividades del consejo.</span>
+      </div>
+      <div style="display:flex;gap:.75rem;align-items:flex-start;">
+        <span class="pill green" style="flex-shrink:0;font-size:12px;">Business Glossary</span>
+        <span style="font-size:13.5px;color:var(--text2);">Sistema de registro de términos de negocio. Los stewards son responsables de su creación y mantenimiento. Fundamental para la coherencia semántica.</span>
+      </div>
+      <div style="display:flex;gap:.75rem;align-items:flex-start;">
+        <span class="pill amber" style="flex-shrink:0;font-size:12px;">Workflow Tools</span>
+        <span style="font-size:13.5px;color:var(--text2);">Automatizan aprobaciones de cambios en definiciones, políticas y estándares de datos. Mantienen la trazabilidad de decisiones.</span>
+      </div>
+      <div style="display:flex;gap:.75rem;align-items:flex-start;">
+        <span class="pill purple" style="flex-shrink:0;font-size:12px;">DG Scorecards</span>
+        <span style="font-size:13.5px;color:var(--text2);">Tableros de control que muestran el cumplimiento de estándares y el progreso del programa DG frente a los KPIs establecidos.</span>
+      </div>
+      <div style="display:flex;gap:.75rem;align-items:flex-start;">
+        <span class="pill" style="flex-shrink:0;font-size:12px;">Document Mgmt</span>
+        <span style="font-size:13.5px;color:var(--text2);">Repositorios centralizados para las políticas, procedimientos y documentación del programa DG.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">Simulador de Métricas DG</div>
+    <p style="font-size:13.5px;color:var(--text2);margin-bottom:1.25rem;">Ajusta los controles para explorar cómo cambia el estado de salud de un programa DG según el DMBOK2:</p>
+
+    <div class="slider-row">
+      <span class="slider-label">Cobertura de Data Stewards</span>
+      <input type="range" min="0" max="100" value="40" step="1" id="sl-steward" oninput="updateMetrics()">
+      <span class="slider-val" id="sv-steward">40%</span>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">Políticas documentadas</span>
+      <input type="range" min="0" max="100" value="30" step="1" id="sl-policy" oninput="updateMetrics()">
+      <span class="slider-val" id="sv-policy">30%</span>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">Adopción del Business Glossary</span>
+      <input type="range" min="0" max="100" value="20" step="1" id="sl-glossary" oninput="updateMetrics()">
+      <span class="slider-val" id="sv-glossary">20%</span>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">Issues resueltos en SLA</span>
+      <input type="range" min="0" max="100" value="55" step="1" id="sl-issues" oninput="updateMetrics()">
+      <span class="slider-val" id="sv-issues">55%</span>
+    </div>
+    <div class="slider-row">
+      <span class="slider-label">Cumplimiento regulatorio</span>
+      <input type="range" min="0" max="100" value="70" step="1" id="sl-compliance" oninput="updateMetrics()">
+      <span class="slider-val" id="sv-compliance">70%</span>
+    </div>
+
+    <div style="border-top:1px solid var(--border);margin:1.25rem 0;"></div>
+    <div style="margin-bottom:.75rem;">
+      <div class="score-bar"><span class="score-bar-label">Madurez del programa</span><div class="score-bar-track"><div class="score-bar-fill" id="bar-maturity" style="background:var(--accent);"></div></div><span class="score-bar-val" id="val-maturity">43%</span></div>
+      <div class="score-bar"><span class="score-bar-label">Reducción de riesgo</span><div class="score-bar-track"><div class="score-bar-fill" id="bar-risk" style="background:var(--accent2);"></div></div><span class="score-bar-val" id="val-risk">60%</span></div>
+      <div class="score-bar"><span class="score-bar-label">Valor entregado</span><div class="score-bar-track"><div class="score-bar-fill" id="bar-value" style="background:var(--accent3);"></div></div><span class="score-bar-val" id="val-value">28%</span></div>
+    </div>
+
+    <div class="metric-grid" id="metric-grid">
+      <div class="metric-card">
+        <div class="metric-val" id="m-maturity" style="color:var(--accent);">43%</div>
+        <div class="metric-label">Índice de Madurez</div>
+        <div class="metric-trend" id="mt-maturity"></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" id="m-risk" style="color:var(--accent2);">60%</div>
+        <div class="metric-label">Reducción de Riesgo</div>
+        <div class="metric-trend" id="mt-risk"></div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-val" id="m-level" style="color:var(--accent5);">Inicial</div>
+        <div class="metric-label">Nivel DAMA</div>
+        <div class="metric-trend" id="mt-level"></div>
+      </div>
+    </div>
+    <div id="metric-advice" style="background:var(--bg3);border-radius:8px;padding:.9rem 1rem;font-size:13px;color:var(--text2);"></div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="goMod(2)">← Anterior</button>
+    <button class="btn btn-primary" onclick="goMod(4)">Siguiente: Simulador Readiness →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     MÓDULO 4: SIMULADOR QUIZ
+════════════════════════════════════════════ -->
+<section class="module" id="mod-4">
+  <div class="module-tag">Módulo 5 de 6 — Simulador</div>
+  <h1 class="module-title">Simulador: Evaluación de Readiness</h1>
+  <p class="module-intro">Imagina que eres el nuevo Chief Data Officer de una empresa manufacturera mediana. Debes tomar decisiones clave para lanzar el programa de Data Governance. Responde las preguntas basándote en los principios del DMBOK2.</p>
+
+  <div class="sim-container">
+    <div class="sim-header">
+      <span class="sim-header-title">Escenario: Lanzamiento del Programa DG</span>
+      <span class="sim-tag">Interactivo</span>
+    </div>
+    <div class="sim-body">
+      <div id="quiz-area"></div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="goMod(3)">← Anterior</button>
+    <button class="btn btn-primary" onclick="goMod(5)">Siguiente: Lab Framework Builder →</button>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════
+     MÓDULO 5: LAB FRAMEWORK BUILDER
+════════════════════════════════════════════ -->
+<section class="module" id="mod-5">
+  <div class="module-tag">Módulo 6 de 6 — Laboratorio</div>
+  <h1 class="module-title">Lab: DG Operating Framework Builder</h1>
+  <p class="module-intro">En este laboratorio construirás un Operating Framework de Data Governance para una organización ficticia, asignando componentes al nivel correcto. También crearás una política de datos básica.</p>
+
+  <!-- Lab Part 1: Framework Builder -->
+  <div class="lab-container">
+    <div class="lab-header">
+      <span style="font-size:14px;font-weight:600;color:var(--text);">Parte 1 — Clasificador de Componentes DG</span>
+      <span class="lab-tag">Drag & Drop</span>
+    </div>
+    <div class="lab-body">
+      <p style="font-size:13.5px;color:var(--text2);margin-bottom:1.25rem;">Arrastra cada componente al nivel organizacional correspondiente (Estratégico, Táctico u Operacional) según el DMBOK2.</p>
+
+      <div style="margin-bottom:1rem;">
+        <div style="font-size:12px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem;">Componentes disponibles:</div>
+        <div id="chip-pool" class="drag-zone" style="border-style:solid;min-height:60px;"></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem;margin-bottom:1rem;">
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--accent);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem;">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--accent);display:inline-block;"></span>Estratégico
+          </div>
+          <div class="drag-zone" id="zone-strategic" data-zone="strategic" ondragover="allowDrop(event)" ondrop="drop(event)"></div>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--accent5);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem;">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--accent5);display:inline-block;"></span>Táctico
+          </div>
+          <div class="drag-zone" id="zone-tactical" data-zone="tactical" ondragover="allowDrop(event)" ondrop="drop(event)"></div>
+        </div>
+        <div>
+          <div style="font-size:12px;font-weight:600;color:var(--accent2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:.5rem;display:flex;align-items:center;gap:.4rem;">
+            <span style="width:8px;height:8px;border-radius:50%;background:var(--accent2);display:inline-block;"></span>Operacional
+          </div>
+          <div class="drag-zone" id="zone-operational" data-zone="operational" ondragover="allowDrop(event)" ondrop="drop(event)"></div>
+        </div>
+      </div>
+
+      <button class="lab-check-btn" onclick="checkFramework()">Verificar clasificación</button>
+      <div class="lab-result" id="framework-result"></div>
+    </div>
+  </div>
+
+  <!-- Lab Part 2: Policy Builder -->
+  <div class="lab-container" style="margin-top:1.5rem;">
+    <div class="lab-header">
+      <span style="font-size:14px;font-weight:600;color:var(--text);">Parte 2 — Generador de Data Policy</span>
+      <span class="lab-tag">Práctica</span>
+    </div>
+    <div class="lab-body">
+      <p style="font-size:13.5px;color:var(--text2);margin-bottom:1.25rem;">Crea una política de datos básica siguiendo la estructura del DMBOK2. Recuerda: las políticas deben ser <em>breves, directas y describir el "qué", no el "cómo"</em>.</p>
+
+      <div class="policy-form">
+        <div class="policy-field">
+          <label>Dominio de datos</label>
+          <select id="p-domain">
+            <option value="">Selecciona un dominio...</option>
+            <option>Customer Data</option>
+            <option>Financial Data</option>
+            <option>Product Data</option>
+            <option>Employee Data</option>
+            <option>Operational Data</option>
+          </select>
+        </div>
+        <div class="policy-field">
+          <label>Área que aborda la política</label>
+          <select id="p-area">
+            <option value="">Selecciona un área...</option>
+            <option>Data Quality</option>
+            <option>Data Security</option>
+            <option>Data Retention</option>
+            <option>Data Access</option>
+            <option>Data Privacy</option>
+          </select>
+        </div>
+        <div class="policy-field">
+          <label>Enunciado de la política (máx. 2 frases)</label>
+          <textarea id="p-statement" placeholder="Ej: Todo dato de cliente debe ser validado en el punto de captura. Los datos duplicados deben identificarse y resolverse dentro de las 24 horas siguientes a su detección."></textarea>
+        </div>
+        <div class="policy-field">
+          <label>Roles responsables</label>
+          <input type="text" id="p-roles" placeholder="Ej: Business Data Steward, Data Owner">
+        </div>
+        <button class="lab-check-btn" onclick="generatePolicy()">Generar política formal</button>
+        <div style="margin-top:.75rem;" id="policy-output"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Role Matcher -->
+  <div class="lab-container" style="margin-top:1.5rem;">
+    <div class="lab-header">
+      <span style="font-size:14px;font-weight:600;color:var(--text);">Parte 3 — Asignador de Roles de Stewardship</span>
+      <span class="lab-tag">Ejercicio</span>
+    </div>
+    <div class="lab-body">
+      <p style="font-size:13.5px;color:var(--text2);margin-bottom:1.25rem;">Lee cada escenario y selecciona el tipo de Data Steward más apropiado según el DMBOK2:</p>
+      <div class="role-matcher" id="role-matcher"></div>
+      <button class="lab-check-btn" onclick="checkRoles()">Verificar respuestas</button>
+      <div class="lab-result" id="role-result"></div>
+    </div>
+  </div>
+
+  <div class="nav-buttons">
+    <button class="btn btn-secondary" onclick="goMod(4)">← Anterior</button>
+    <button class="btn btn-primary" onclick="showFinalScore()">Ver puntuación final 🏁</button>
+  </div>
+</section>
+
+</main>
+</div>
+
+<script>
+/* ── DATA ── */
+const ACTIVITIES = [
+  { n:"2.1", name:"Definir DG para la organización", desc:"El programa DG debe soportar la estrategia y los objetivos de negocio. Requiere claridad sobre qué se gobierna, quién es gobernado y quién gobierna. Más efectivo como esfuerzo empresarial que como iniciativa aislada." },
+  { n:"2.2", name:"Realizar Readiness Assessment", desc:"Evaluaciones del estado actual de capacidades de gestión de la información: madurez de gestión de datos, capacidad de cambio, preparación colaborativa y alineación de negocio." },
+  { n:"2.3", name:"Descubrimiento y alineación de negocio", desc:"Identificar beneficios específicos del programa DG. Incluye análisis de calidad de datos (DQ), evaluación de prácticas existentes y derivación de requisitos DG desde los riesgos regulatorios identificados." },
+  { n:"2.4", name:"Desarrollar puntos de contacto organizacionales", desc:"Conectar la función CDO con Procurement, Budget, Legal, Regulatory Compliance, CISO, Privacy Officer, Enterprise Architecture y Project/Portfolio Management." },
+  { n:"2.5", name:"Desarrollar estrategia DG", desc:"La estrategia DG articula el alcance, el enfoque, el modelo de gobernanza y el roadmap. Debe estar alineada con la estrategia de datos de la empresa y apoyarse en el Operating Framework." },
+  { n:"2.6", name:"Definir el Operating Framework DG", desc:"Especifica los roles, responsabilidades, estructuras de toma de decisiones, procesos de escalación y mecanismos de comunicación del programa DG." },
+  { n:"2.7", name:"Desarrollar Goals, Principles y Policies", desc:"Los principios guían los comportamientos; las políticas los codifican en reglas. Deben ser revisados y aprobados por el DG Council antes de su publicación." },
+  { n:"2.8", name:"Patrocinar proyectos de gestión de datos", desc:"El DG Council actúa como patrocinador ejecutivo de iniciativas de gestión de datos: desde programas de calidad de datos hasta proyectos de MDM o Data Catalog." },
+  { n:"2.9", name:"Gestión del cambio", desc:"DG requiere cambio de comportamiento. Aplicar gestión del cambio formal (PROSCI/ADKAR): crear urgencia, coalition, comunicar la visión, remover obstáculos, generar victorias rápidas." },
+  { n:"2.10", name:"Gestión de issues", desc:"Proceso estructurado para identificar, registrar, escalar y resolver problemas relacionados con datos. Incluye el Data Issue Escalation Path: identificación → escalación → resolución → documentación." },
+  { n:"2.11", name:"Evaluar cumplimiento regulatorio", desc:"Identificar y evaluar los requisitos regulatorios aplicables (GDPR, CCPA, PCI-DSS, HIPAA, etc.) y asegurar que las políticas y controles DG los aborden." },
+  { n:"2.12", name:"Implementar Data Governance", desc:"Desplegar el programa DG: publicar políticas, activar el Business Glossary, establecer comités, lanzar el portal DG, entrenar a los stewards y comenzar a medir." },
+  { n:"2.13", name:"Patrocinar estándares y procedimientos", desc:"El DG Council aprueba y patrocina los estándares de datos (naming conventions, formatos, validaciones) y los procedimientos que los implementan." },
+  { n:"2.14", name:"Desarrollar el Business Glossary", desc:"Repositorio centralizado de definiciones de términos de negocio. Clave para coherencia semántica. Los Business Data Stewards son los responsables de su contenido." },
+  { n:"2.15", name:"Coordinar con grupos de arquitectura", desc:"DG debe integrarse con Enterprise Architecture para asegurar que los principios DG se reflejen en las decisiones arquitecturales." },
+  { n:"2.16", name:"Patrocinar la valoración de activos de datos", desc:"Promover el entendimiento del valor económico de los datos aplicando los Generally Accepted Information Principles." },
+  { n:"2.17", name:"Embeber Data Governance", desc:"El objetivo final: que DG no sea un programa separado sino parte natural de cómo la organización trabaja con datos. Integrado en procesos, proyectos y cultura organizacional." },
+];
+
+const QUIZ = [
+  {
+    q: "¿Cuál debería ser tu primer paso como nuevo CDO antes de diseñar el Operating Framework de DG?",
+    opts: ["Publicar el Business Glossary con los 50 términos más usados", "Realizar un Readiness Assessment (madurez, capacidad de cambio, alineación)", "Contratar consultores externos para definir las políticas", "Implementar un Data Catalog empresarial"],
+    correct: 1,
+    fb_ok: "✅ Correcto. El DMBOK2 (Actividad 2.2) establece que antes de diseñar cualquier estrategia o framework DG, es crítico evaluar el estado actual: madurez de gestión de datos, capacidad organizacional de cambio y alineación de negocio.",
+    fb_bad: "❌ No es la respuesta correcta. Según el DMBOK2, comenzar sin un diagnóstico sólido es uno de los errores más comunes. El Readiness Assessment (2.2) debe preceder a cualquier diseño del programa."
+  },
+  {
+    q: "La CFO te pregunta por qué debería financiar el programa DG. Ella quiere un argumento financiero. ¿Cuál es el más sólido según el DMBOK2?",
+    opts: ["Los datos son activos; su mala gestión genera pasivos financieros reales (multas, litigios, costos de corrección)", "DG es una obligación regulatoria internacional y debemos cumplirla", "Nuestros competidores ya tienen DG implementado", "DG mejorará el NPS de nuestros clientes en 20%"],
+    correct: 0,
+    fb_ok: "✅ Correcto. El DMBOK2 usa los Generally Accepted Information Principles para articular que los datos son activos con valor medible, y su mal manejo genera Liability Principle: pasivos financieros concretos.",
+    fb_bad: "❌ No es el argumento más poderoso según el DMBOK2. El framework propone aplicar principios contables a los datos: Asset Principle, Liability Principle y Risk Principle son la base del caso de negocio financiero."
+  },
+  {
+    q: "El jefe de ventas dice que él 'ya gestiona sus datos' y que no necesita DG. Según el DMBOK2, ¿qué debería responderle?",
+    opts: ["Decirle que DG es obligatorio y que no tiene opción", "Explicar que DG es más efectivo como esfuerzo empresarial porque los datos fluyen a través de todas las áreas", "Proponer que ventas tenga su propio DG independiente", "Ignorarlo y proceder con las otras áreas"],
+    correct: 1,
+    fb_ok: "✅ Correcto. El DMBOK2 (2.1) establece explícitamente que DG es más efectivo cuando es un esfuerzo empresarial, no aislado por función. Los datos de ventas impactan facturación, servicio al cliente, marketing y logística.",
+    fb_bad: "❌ El DMBOK2 no recomienda un enfoque impositivo ni fragmentado. La clave está en demostrar que los datos cruzan fronteras organizacionales y que una visión aislada genera silos y problemas de integración."
+  },
+  {
+    q: "Identificas que un Business Data Steward lleva 18 meses documentando términos en Excel sin ningún proceso de aprobación formal. Según el DMBOK2, ¿qué problema estructural refleja esto?",
+    opts: ["El steward no tiene las competencias técnicas necesarias", "Falta un Business Glossary con workflow de aprobación y un Operating Framework que defina el proceso", "El CDO no ha dado suficiente presupuesto para herramientas", "Los datos de esa área son demasiado complejos para estandarizar"],
+    correct: 1,
+    fb_ok: "✅ Correcto. El DMBOK2 (2.14 y Herramientas) establece que el Business Glossary requiere workflow tools para gestionar aprobaciones. Sin un proceso formal, los términos son opiniones individuales, no estándares organizacionales.",
+    fb_bad: "❌ El problema no es de competencias individuales sino de ausencia de infraestructura DG. Un Operating Framework bien definido (2.6) establece los procesos, roles y herramientas para que el stewardship sea efectivo y no dependiente de heroísmo individual."
+  },
+  {
+    q: "El Director de TI propone que sea su equipo quien apruebe todas las definiciones del Business Glossary. ¿Qué dice el DMBOK2 al respecto?",
+    opts: ["TI puede aprobar porque tienen la visión técnica de los sistemas", "Las definiciones de negocio deben ser aprobadas por Business Data Stewards/Owners, no por TI", "Debe crearse un comité mixto donde TI tenga voto de calidad", "Solo el CDO debe aprobar las definiciones"],
+    correct: 1,
+    fb_ok: "✅ Correcto. El DMBOK2 diferencia entre Business Data Stewards (expertos en el significado de negocio de los datos) y Technical Data Stewards (responsables de los sistemas que los almacenan). Las definiciones de negocio son responsabilidad del negocio.",
+    fb_bad: "❌ Según el DMBOK2, los Technical Data Stewards (TI) gestionan los aspectos técnicos de los datos. Las definiciones de negocio pertenecen al negocio; dejar esa responsabilidad en TI es una causa frecuente de glossaries irrelevantes para el negocio."
+  },
+  {
+    q: "¿Cuál es la diferencia entre una Data Policy y un Data Standard según el DMBOK2?",
+    opts: ["Son sinónimos, se usan indistintamente", "Una Policy describe el 'qué' (principios); un Standard define los requisitos mínimos de conformidad ('cómo mínimo')", "Una Policy es técnica; un Standard es de negocio", "Las Policies las define TI; los Standards los define el negocio"],
+    correct: 1,
+    fb_ok: "✅ Correcto. El DMBOK2 (1.3.6) es claro: Policies describen el 'qué' — las reglas fundamentales. Standards describen los requisitos mínimos de cumplimiento. Procedures describen el 'cómo' con detalle operativo.",
+    fb_bad: "❌ El DMBOK2 establece una jerarquía clara: Policies → Standards → Procedures. Son documentos distintos con propósito y audiencia diferente. Confundirlos genera normativas inmanejables o vacías."
+  },
+];
+
+const COMPONENTS = [
+  { id:"c1", label:"Data Governance Council", correct:"strategic" },
+  { id:"c2", label:"CDO (Chief Data Officer)", correct:"strategic" },
+  { id:"c3", label:"DG Steering Committee", correct:"tactical" },
+  { id:"c4", label:"Data Stewardship Council", correct:"tactical" },
+  { id:"c5", label:"Business Data Stewards", correct:"operational" },
+  { id:"c6", label:"Technical Data Stewards", correct:"operational" },
+  { id:"c7", label:"Data Owners", correct:"operational" },
+  { id:"c8", label:"Executive Sponsors", correct:"strategic" },
+];
+
+const ROLE_SCENARIOS = [
+  { scenario: "Un experto en finanzas define qué significa 'Revenue Recognized' y resuelve disputas entre ventas y contabilidad sobre cómo contabilizarlo.", correct: "Business Data Steward" },
+  { scenario: "La CISO gestiona los controles de acceso a la base de datos de clientes y asegura el cifrado de datos sensibles en reposo.", correct: "Technical Data Steward" },
+  { scenario: "La VP de Marketing forma parte del DG Council y aprueba la estrategia anual del programa DG.", correct: "Executive Data Steward" },
+  { scenario: "Un coordinador asegura que los equipos de stewards de Latinoamérica y Europa usen las mismas definiciones en el Business Glossary global.", correct: "Coordinating Data Steward" },
+];
+
+/* ── STATE ── */
+let currentMod = 0;
+let completedMods = new Set();
+let quizState = { current: 0, score: 0, answered: false };
+let draggedChip = null;
+
+/* ── NAVIGATION ── */
+function goMod(n) {
+  document.querySelectorAll('.module').forEach(m => m.classList.remove('visible'));
+  document.getElementById('mod-' + n).classList.add('visible');
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.remove('active');
+    if (parseInt(el.dataset.mod) === n) el.classList.add('active');
+  });
+  currentMod = n;
+  completedMods.add(n);
+  updateProgress();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function updateProgress() {
+  const total = 6;
+  const done = completedMods.size;
+  document.getElementById('progress-label').textContent = done + ' / ' + total + ' completados';
+  document.getElementById('main-progress').style.width = Math.round(done/total*100) + '%';
+  document.querySelectorAll('.nav-item').forEach(el => {
+    if (completedMods.has(parseInt(el.dataset.mod))) el.classList.add('done');
+  });
+}
+
+/* ── BUILD ACTIVITIES ── */
+function buildActivities() {
+  const el = document.getElementById('activity-list');
+  el.innerHTML = ACTIVITIES.map((a, i) => `
+    <div class="activity-item" id="act-${i}">
+      <div class="activity-header" onclick="toggleActivity(${i})">
+        <div class="activity-num">${a.n}</div>
+        <div class="activity-name">${a.name}</div>
+        <span class="activity-chevron">▼</span>
+      </div>
+      <div class="activity-body">${a.desc}</div>
+    </div>
+  `).join('');
+}
+
+function toggleActivity(i) {
+  const el = document.getElementById('act-' + i);
+  el.classList.toggle('open');
+}
+
+/* ── METRICS SIMULATOR ── */
+function updateMetrics() {
+  const s = parseInt(document.getElementById('sl-steward').value);
+  const p = parseInt(document.getElementById('sl-policy').value);
+  const g = parseInt(document.getElementById('sl-glossary').value);
+  const iss = parseInt(document.getElementById('sl-issues').value);
+  const c = parseInt(document.getElementById('sl-compliance').value);
+
+  document.getElementById('sv-steward').textContent = s + '%';
+  document.getElementById('sv-policy').textContent = p + '%';
+  document.getElementById('sv-glossary').textContent = g + '%';
+  document.getElementById('sv-issues').textContent = iss + '%';
+  document.getElementById('sv-compliance').textContent = c + '%';
+
+  const maturity = Math.round((s * 0.25 + p * 0.2 + g * 0.2 + iss * 0.2 + c * 0.15));
+  const risk = Math.round((c * 0.4 + iss * 0.3 + p * 0.2 + s * 0.1));
+  const value = Math.round((g * 0.35 + s * 0.3 + iss * 0.2 + p * 0.15));
+
+  document.getElementById('bar-maturity').style.width = maturity + '%';
+  document.getElementById('bar-risk').style.width = risk + '%';
+  document.getElementById('bar-value').style.width = value + '%';
+  document.getElementById('val-maturity').textContent = maturity + '%';
+  document.getElementById('val-risk').textContent = risk + '%';
+  document.getElementById('val-value').textContent = value + '%';
+  document.getElementById('m-maturity').textContent = maturity + '%';
+  document.getElementById('m-risk').textContent = risk + '%';
+
+  let level, advice;
+  if (maturity < 25) { level = 'Inicial'; advice = '⚠️ Nivel Inicial: El programa DG no está formalmente establecido. Prioriza el Readiness Assessment y la obtención del patrocinio ejecutivo antes de cualquier otra acción.'; }
+  else if (maturity < 50) { level = 'Repetible'; advice = '🔧 Nivel Repetible: Existen procesos básicos pero no son consistentes. Formaliza el Operating Framework, define roles claros y lanza el Business Glossary.'; }
+  else if (maturity < 70) { level = 'Definido'; advice = '📋 Nivel Definido: Los procesos están documentados. Enfócate en aumentar la adopción del Business Glossary y mejorar la resolución de issues dentro del SLA.'; }
+  else if (maturity < 85) { level = 'Gestionado'; advice = '📊 Nivel Gestionado: Los procesos se miden y controlan. Trabaja en "embeber" DG (actividad 2.17) para que sea parte natural de la cultura organizacional.'; }
+  else { level = 'Optimizado'; advice = '🏆 Nivel Optimizado: Excelente madurez DG. El programa está embebido en la cultura. Enfócate en innovación: valoración avanzada de activos de datos y DG para IA/Big Data.'; }
+
+  document.getElementById('m-level').textContent = level;
+  document.getElementById('metric-advice').textContent = advice;
+}
+
+/* ── QUIZ ── */
+function buildQuiz() {
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  const qa = document.getElementById('quiz-area');
+  const qi = quizState.current;
+  if (qi >= QUIZ.length) { renderQuizResult(); return; }
+  const q = QUIZ[qi];
+  qa.innerHTML = `
+    <div style="font-size:12px;color:var(--text3);margin-bottom:.75rem;">Pregunta ${qi+1} de ${QUIZ.length}</div>
+    <div class="sim-question">${q.q}</div>
+    <div class="sim-options" id="opts">
+      ${q.opts.map((o, i) => `<div class="sim-opt" id="opt-${i}" onclick="selectOpt(${i})">${o}</div>`).join('')}
+    </div>
+    <div class="sim-feedback" id="feedback"></div>
+    <div class="sim-nav">
+      <span class="sim-progress-text">Puntuación actual: ${quizState.score} / ${qi}</span>
+      <button class="btn btn-primary" id="next-btn" style="display:none;" onclick="nextQuestion()">Siguiente →</button>
+    </div>
+  `;
+}
+
+function selectOpt(i) {
+  if (quizState.answered) return;
+  quizState.answered = true;
+  const q = QUIZ[quizState.current];
+  const opts = document.querySelectorAll('.sim-opt');
+  opts.forEach((o, j) => {
+    if (j === q.correct) o.classList.add('correct');
+    else if (j === i && i !== q.correct) o.classList.add('wrong');
+  });
+  const fb = document.getElementById('feedback');
+  if (i === q.correct) {
+    quizState.score++;
+    fb.textContent = q.fb_ok;
+    fb.className = 'sim-feedback visible ok';
+  } else {
+    fb.textContent = q.fb_bad;
+    fb.className = 'sim-feedback visible bad';
+  }
+  document.getElementById('next-btn').style.display = 'block';
+}
+
+function nextQuestion() {
+  quizState.current++;
+  quizState.answered = false;
+  renderQuizQuestion();
+}
+
+function renderQuizResult() {
+  const pct = Math.round(quizState.score / QUIZ.length * 100);
+  const circumference = 2 * Math.PI * 50;
+  const offset = circumference - (pct / 100) * circumference;
+  const color = pct >= 80 ? '#4ade80' : pct >= 60 ? '#fbbf24' : '#f87171';
+  document.getElementById('quiz-area').innerHTML = `
+    <div style="text-align:center;padding:1.5rem 0;">
+      <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:.5rem;">¡Simulador completado!</div>
+      <div class="final-score-ring">
+        <svg width="120" height="120" viewBox="0 0 120 120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="8"/>
+          <circle cx="60" cy="60" r="50" fill="none" stroke="${color}" stroke-width="8"
+            stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" stroke-linecap="round"/>
+        </svg>
+        <div>
+          <div class="final-score-num" style="color:${color};">${pct}%</div>
+          <div class="final-score-sub">${quizState.score}/${QUIZ.length} correctas</div>
+        </div>
+      </div>
+      <p style="font-size:14px;color:var(--text2);max-width:420px;margin:0 auto 1.25rem;">${pct >= 80 ? '🏆 Excelente dominio de los conceptos DG del DMBOK2. Estás listo para el Lab.' : pct >= 60 ? '📋 Buen conocimiento. Revisa las actividades 2.2, 2.6 y 2.14 para reforzar los conceptos clave.' : '📚 Te recomendamos releer los Módulos 1 y 2 antes de continuar al Lab.'}</p>
+      <button class="btn btn-secondary" onclick="restartQuiz()" style="margin-right:.5rem;">Reintentar</button>
+      <button class="btn btn-primary" onclick="goMod(5)">Ir al Lab →</button>
+    </div>
+  `;
+}
+
+function restartQuiz() {
+  quizState = { current: 0, score: 0, answered: false };
+  renderQuizQuestion();
+}
+
+/* ── DRAG & DROP ── */
+function buildDragDrop() {
+  const pool = document.getElementById('chip-pool');
+  const shuffled = [...COMPONENTS].sort(() => Math.random() - .5);
+  pool.innerHTML = shuffled.map(c => `
+    <div class="drag-chip" id="${c.id}" draggable="true"
+      ondragstart="dragStart(event)" ondragend="dragEnd(event)">${c.label}</div>
+  `).join('');
+  document.querySelectorAll('.drag-zone[data-zone]').forEach(zone => {
+    zone.addEventListener('dragover', allowDrop);
+    zone.addEventListener('drop', drop);
+    zone.addEventListener('dragenter', e => zone.classList.add('over'));
+    zone.addEventListener('dragleave', e => zone.classList.remove('over'));
+  });
+}
+
+function dragStart(e) {
+  draggedChip = e.target.id;
+  e.dataTransfer.setData('text/plain', e.target.id);
+  e.target.style.opacity = '.5';
+}
+function dragEnd(e) { e.target.style.opacity = '1'; }
+function allowDrop(e) { e.preventDefault(); }
+function drop(e) {
+  e.preventDefault();
+  const zone = e.currentTarget;
+  zone.classList.remove('over');
+  const id = e.dataTransfer.getData('text/plain');
+  const chip = document.getElementById(id);
+  if (!chip) return;
+  chip.classList.add('placed');
+  zone.appendChild(chip);
+}
+
+function checkFramework() {
+  let correct = 0;
+  COMPONENTS.forEach(c => {
+    const chip = document.getElementById(c.id);
+    if (!chip) return;
+    const zone = chip.closest('.drag-zone[data-zone]');
+    if (zone && zone.dataset.zone === c.correct) correct++;
+  });
+  const total = COMPONENTS.length;
+  const pct = Math.round(correct / total * 100);
+  const el = document.getElementById('framework-result');
+  el.className = 'lab-result visible';
+  el.style.background = pct >= 80 ? 'rgba(74,222,128,.1)' : 'rgba(251,191,36,.1)';
+  el.style.borderLeft = '3px solid ' + (pct >= 80 ? 'var(--accent2)' : 'var(--accent3)');
+  el.innerHTML = `<strong style="color:${pct >= 80 ? 'var(--accent2)' : 'var(--accent3)'};">${correct}/${total} correctos (${pct}%)</strong><br>
+  ${pct === 100 ? '🏆 Perfecto. Dominas la estructura organizacional del DMBOK2.' : pct >= 75 ? '✅ Muy bien. Revisa que el DG Council y Executive Sponsors pertenecen al nivel Estratégico, y que los Stewards individuales al Operacional.' : '📚 Recuerda: el nivel Estratégico incluye los órganos de gobierno máximos (Council, CDO, Sponsors). El nivel Táctico incluye comités de coordinación. El Operacional incluye los roles que ejecutan día a día.'}`;
+}
+
+/* ── POLICY BUILDER ── */
+function generatePolicy() {
+  const domain = document.getElementById('p-domain').value;
+  const area = document.getElementById('p-area').value;
+  const statement = document.getElementById('p-statement').value.trim();
+  const roles = document.getElementById('p-roles').value.trim();
+  if (!domain || !area || !statement) {
+    const out = document.getElementById('policy-output');
+    out.className = 'lab-result visible';
+    out.style.background = 'rgba(248,113,113,.1)';
+    out.style.borderLeft = '3px solid var(--accent4)';
+    out.textContent = '⚠️ Completa todos los campos obligatorios (dominio, área y enunciado).';
+    return;
+  }
+  const policyId = 'DGP-' + Math.random().toString(36).substr(2,5).toUpperCase();
+  const out = document.getElementById('policy-output');
+  out.className = '';
+  out.innerHTML = `
+    <div class="policy-preview visible">
+<strong>DATA GOVERNANCE POLICY</strong>
+ID: ${policyId}
+Dominio: ${domain}
+Área: ${area}
+Versión: 1.0  |  Estado: BORRADOR
+
+ENUNCIADO:
+${statement}
+
+ROLES RESPONSABLES: ${roles || 'Por definir'}
+
+REFERENCIA DMBOK2: Capítulo 3, Actividad 2.7 — Develop Goals, Principles and Policies
+
+NOTA: Según el DMBOK2, esta política describe el "QUÉ". Los estándares 
+(cómo mínimo) y los procedimientos (cómo en detalle) se documentan 
+en documentos separados aprobados por los Data Stewards correspondientes.
+    </div>`;
+  const evalEl = document.createElement('div');
+  const wordCount = statement.split(/\s+/).length;
+  evalEl.style.cssText = 'margin-top:.75rem;padding:.9rem 1rem;border-radius:8px;font-size:13px;';
+  if (wordCount > 50) {
+    evalEl.style.background = 'rgba(251,191,36,.1)';
+    evalEl.style.borderLeft = '3px solid var(--accent3)';
+    evalEl.innerHTML = '⚠️ <strong style="color:var(--accent3);">Muy larga:</strong> El DMBOK2 recomienda que las políticas sean breves y directas. Considera reducirla a 1-2 oraciones concretas.';
+  } else {
+    evalEl.style.background = 'rgba(74,222,128,.1)';
+    evalEl.style.borderLeft = '3px solid var(--accent2)';
+    evalEl.innerHTML = '✅ <strong style="color:var(--accent2);">Buen formato:</strong> La política es concisa. Recuerda que describe el "qué", no el "cómo". ¡Lista para revisión del DG Council!';
+  }
+  out.appendChild(evalEl);
+}
+
+/* ── ROLE MATCHER ── */
+function buildRoleMatcher() {
+  const container = document.getElementById('role-matcher');
+  const roles = ["Business Data Steward", "Technical Data Steward", "Executive Data Steward", "Enterprise Data Steward", "Chief Data Steward", "Coordinating Data Steward"];
+  container.innerHTML = ROLE_SCENARIOS.map((s, i) => `
+    <div class="role-scenario">
+      <p>${s.scenario}</p>
+      <select class="role-select" id="rs-${i}">
+        <option value="">Selecciona el rol...</option>
+        ${roles.map(r => `<option value="${r}">${r}</option>`).join('')}
+      </select>
+    </div>
+  `).join('');
+}
+
+function checkRoles() {
+  let correct = 0;
+  ROLE_SCENARIOS.forEach((s, i) => {
+    const sel = document.getElementById('rs-' + i);
+    if (sel.value === s.correct) { correct++; sel.style.border = '1.5px solid var(--accent2)'; }
+    else { sel.style.border = '1.5px solid var(--accent4)'; }
+  });
+  const el = document.getElementById('role-result');
+  el.className = 'lab-result visible';
+  const pct = Math.round(correct / ROLE_SCENARIOS.length * 100);
+  el.style.background = correct === ROLE_SCENARIOS.length ? 'rgba(74,222,128,.1)' : 'rgba(251,191,36,.1)';
+  el.style.borderLeft = '3px solid ' + (correct === ROLE_SCENARIOS.length ? 'var(--accent2)' : 'var(--accent3)');
+  el.innerHTML = `<strong>${correct}/${ROLE_SCENARIOS.length} correctos.</strong> ${correct === ROLE_SCENARIOS.length ? 
+    '🏆 Perfecto. Distingues con claridad los tipos de Data Stewards del DMBOK2.' : 
+    'Recuerda: Business Stewards = expertos de negocio. Technical = TI/sistemas. Executive = gerentes en el Council. Coordinating = coordinación entre equipos.'}`;
+}
+
+/* ── FINAL SCORE ── */
+function showFinalScore() {
+  const quizPct = quizState.current > 0 ? Math.round(quizState.score / Math.min(quizState.current, QUIZ.length) * 100) : 0;
+  alert(`🎓 Curso completado!\n\nSimulador de Readiness: ${quizPct}% (${quizState.score}/${QUIZ.length})\n\nHas completado el Capítulo 3 del DMBOK2 — Data Governance.\n\nConceptos dominados:\n• Estructura organizacional DG\n• Tipos de Data Stewards\n• Las 17 actividades DG\n• Data Policies vs Standards vs Procedures\n• Métricas de madurez DG\n• Operating Framework Builder`);
+}
+
+/* ── INIT ── */
+buildActivities();
+buildQuiz();
+buildDragDrop();
+buildRoleMatcher();
+updateMetrics();
+</script>
+</body>
+</html>
